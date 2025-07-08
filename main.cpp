@@ -41,8 +41,6 @@ SDL_Window* win = SDL_CreateWindow("Car Game", Constants::SDL_WINDOW_X, Constant
     Car car{Constants::CENTER_X, Constants::CENTER_Y, Constants::CAR_WIDTH, Constants::CAR_LENGTH};
 
 
-    Eigen::Vector2d inputDirection;
-
 
     for (int i =0; i < 1000; i++) {
         while (SDL_PollEvent(&event)) {
@@ -68,8 +66,6 @@ SDL_Window* win = SDL_CreateWindow("Car Game", Constants::SDL_WINDOW_X, Constant
                     break;
 
                 case SDL_KEYUP:
-                    a = Constants::ZERO_VECTOR * 100;
-                    car.applyInput(a);
                     break;
 
 

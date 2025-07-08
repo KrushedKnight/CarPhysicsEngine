@@ -36,7 +36,7 @@ void RigidBody::addTorque(double torque) {
 
 
 void RigidBody::clearForces() {
-    forces = Eigen::Vector2d::Zero();
+    forces.setZero();
 }
 
 void RigidBody::clearTorques() {
@@ -44,18 +44,18 @@ void RigidBody::clearTorques() {
 }
 
 void RigidBody::incrementTime(double time_interval) {
-    acceleration = forces/ mass;
-
-    pos_x += pos_x + velocity.x() * time_interval + 0.5 * acceleration.x() * time_interval * time_interval;
-    pos_y += pos_y + velocity.y() * time_interval + 0.5 * acceleration.y() * time_interval * time_interval;
-    velocity = velocity + acceleration * time_interval;
-
-    angular_acceleration = angular_torque / moment_of_inertia;
-    angular_position += angular_velocity * time_interval + 0.5 * angular_acceleration * time_interval * time_interval;
-    angular_velocity += angular_acceleration * time_interval;
-
-    clearForces();
-    clearTorques();
+    // acceleration = forces/ mass;
+    //
+    // pos_x += pos_x + velocity.x() * time_interval + 0.5 * acceleration.x() * time_interval * time_interval;
+    // pos_y += pos_y + velocity.y() * time_interval + 0.5 * acceleration.y() * time_interval * time_interval;
+    // velocity = velocity + acceleration * time_interval;
+    //
+    // angular_acceleration = angular_torque / moment_of_inertia;
+    // angular_position += angular_velocity * time_interval + 0.5 * angular_acceleration * time_interval * time_interval;
+    // angular_velocity += angular_acceleration * time_interval;
+    //
+    // clearForces();
+    // clearTorques();
 }
 
 

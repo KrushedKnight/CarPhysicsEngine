@@ -4,8 +4,9 @@
 
 #ifndef CONSTANTS_H
 #define CONSTANTS_H
+
 #include <cmath>
-#include <eigen-3.4.0/Eigen/src/Core/Matrix.h>
+#include <eigen-3.4.0/Eigen/Core>
 
 
 //TODO: where should constants be>

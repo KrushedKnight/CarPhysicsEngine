@@ -3,6 +3,7 @@
 //
 
 #include "Car.h"
+#include "constants.h"
 
 
 
@@ -15,11 +16,6 @@ Car::Car(double x, double y, int w, int h) : width(w), height(h), steering_angle
     backLeft = new Wheel();
     backRight = new Wheel();
 
-}
-
-
-void Car::applyInput(Eigen::Vector2d &inputVector) {
-    acceleration = acceleration;
 }
 
 

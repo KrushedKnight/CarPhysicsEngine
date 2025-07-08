@@ -6,7 +6,7 @@
 #define CAR_H
 #include <SDL_rect.h>
 #include <SDL_render.h>
-#include <eigen-3.4.0/Eigen/Dense>
+#include <eigen-3.4.0/Eigen/Core>
 
 #include "RigidBody.h"
 #include "Wheel.h"
@@ -27,8 +27,6 @@ class Car : public RigidBody {
         Wheel* backRight;
 
         std::vector<Wheel*> wheels{frontLeft, frontRight, backLeft, backRight};
-
-        void applyInput(Eigen::Vector2d &acceleration);
 
 
         const int getWidth();
