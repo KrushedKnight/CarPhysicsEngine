@@ -4,7 +4,7 @@
 
 #ifndef RIGIDBODY_H
 #define RIGIDBODY_H
-#include <eigen-3.4.0/Eigen/src/Core/Matrix.h>
+#include <eigen-3.4.0/Eigen/Dense>
 
 
 class RigidBody {
@@ -33,6 +33,7 @@ public:
 
 
     void addForce(Eigen::Vector2d force);
+
     void addTorque(double torque);
 
     void clearForces();

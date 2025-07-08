@@ -11,13 +11,17 @@
 
 class Wheel : public RigidBody {
 public:
-    double WHEEL_ANGLE;
+    double wheelAngle;
 
-    double WHEEL_RADIUS{Constants::WHEEL_RADIUS};
+    double wheelRadius{Constants::WHEEL_RADIUS};
 
     double frictionCoefficient{Constants::WHEEL_FRICTION};
 
+    double normalForce;
+
     Wheel();
+
+    Eigen::Vector2d calculateFriction();
 };
 
 

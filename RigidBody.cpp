@@ -30,7 +30,7 @@ void RigidBody::addForce(Eigen::Vector2d force) {
     forces += force;
 }
 
-void RigidBody::addTorque(Eigen::Vector2d torque) {
+void RigidBody::addTorque(double torque) {
     angular_torque += torque;
 }
 

@@ -50,22 +50,20 @@ SDL_Window* win = SDL_CreateWindow("Car Game", Constants::SDL_WINDOW_X, Constant
                 case SDL_KEYDOWN:
                     switch (event.key.keysym.sym) {
                         case SDLK_w:
-                                inputDirection = Constants::DOWN_VECTOR * 100;
-                                car.applyInput(a);
+                                car.applyEngineTorque();
                                 break;
                         case SDLK_s:
-                                inputDirection = Constants::UP_VECTOR * 100;
-                                car.applyInput(a);
+                                car.applyBrakes();
                                 break;
 
-                        case SDLK_a:
-                            inputDirection = Constants::LEFT_VECTOR * 100;
-                            car.applyInput(a);
-                            break;
-                        case SDLK_d:
-                            inputDirection = Constants::RIGHT_VECTOR * 100;
-                            car.applyInput(a);
-                            break;
+                        // case SDLK_a:
+                        //     inputDirection = Constants::LEFT_VECTOR * 100;
+                        //     car.applyInput(a);
+                        //     break;
+                        // case SDLK_d:
+                        //     inputDirection = Constants::RIGHT_VECTOR * 100;
+                        //     car.applyInput(a);
+                        //     break;
                     }
                     break;
 

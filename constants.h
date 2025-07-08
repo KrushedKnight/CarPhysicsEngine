@@ -29,9 +29,11 @@ namespace Constants {
     int CAR_WIDTH = std::floor(25.0 * SCALING_FACTOR);
     int CAR_LENGTH = std::floor(45.0 * SCALING_FACTOR);
 
+
     double DIST_TO_WHEEL = sqrt(CAR_WIDTH * CAR_WIDTH + CAR_LENGTH * CAR_LENGTH);
 
-    double CAR_POWER = 1.0;
+    double CAR_POWER = 100;
+    double BRAKING_POWER = 150;
 
     double CAR_MASS = 1.0;
     double CAR_MOMENT_OF_INERTIA = 1.0;
