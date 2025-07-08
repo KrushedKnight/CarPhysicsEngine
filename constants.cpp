@@ -1,0 +1,49 @@
+//
+// Created by beast-machine-2 on 7/8/25.
+//
+
+#include <cmath>
+#include "constants.h"
+
+namespace Constants {
+const double TIME_INTERVAL = 0.016;
+const int SDL_TIME_INTERVAL = 16;
+
+const double SCALING_FACTOR = 1.0;
+
+const int SDL_WINDOW_X = 640.0 * SCALING_FACTOR;
+const int SDL_WINDOW_Y = 480.0 * SCALING_FACTOR;
+
+const int SDL_WINDOW_WIDTH = 640.0 * SCALING_FACTOR;
+const int SDL_WINDOW_LENGTH = 480.0 * SCALING_FACTOR;
+
+
+const double CENTER_X = SDL_WINDOW_WIDTH / 2.0;
+const double CENTER_Y = SDL_WINDOW_LENGTH / 2.0;
+
+
+const int CAR_WIDTH = std::floor(25.0 * SCALING_FACTOR);
+const int CAR_LENGTH = std::floor(45.0 * SCALING_FACTOR);
+
+
+const double DIST_TO_WHEEL = std::sqrt(CAR_WIDTH * CAR_WIDTH + CAR_LENGTH * CAR_LENGTH);
+
+const double CAR_POWER = 100;
+const double BRAKING_POWER = 150;
+
+const double CAR_MASS = 1.0;
+const double CAR_MOMENT_OF_INERTIA = 1.0;
+
+const double WHEEL_RADIUS = 0.5;
+const double WHEEL_FRICTION = 0.3;
+
+const double STEERING_RACK = 0.5;
+}
+
+
+// Eigen::Vector2d UP_VECTOR{0, 1};
+// Eigen::Vector2d DOWN_VECTOR{0, -1};
+// Eigen::Vector2d LEFT_VECTOR{-1, 0};
+// Eigen::Vector2d RIGHT_VECTOR{1, 0};
+//
+// Eigen::Vector2d ZERO_VECTOR{0, 0};

@@ -15,5 +15,6 @@ add_executable(SimpleTrafficGame main.cpp
         RigidBody.cpp
         RigidBody.h
         Wheel.cpp
-        Wheel.h)
+        Wheel.h
+        constants.cpp)
 target_link_libraries(SimpleTrafficGame ${SDL2_LIBRARIES})
