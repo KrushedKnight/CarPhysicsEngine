@@ -22,18 +22,25 @@ class Car : public RigidBody {
         double braking_power{Constants::BRAKING_POWER};
 
         Wheel* frontLeft;
+
         Wheel* frontRight;
+
         Wheel* backLeft;
+
         Wheel* backRight;
 
         std::vector<Wheel*> wheels;
 
+        SDL_Texture *getRectangleTexture(SDL_Renderer *renderer);
+
 
         const int getWidth();
+
         const int getHeight();
 
 
         void drawCar(SDL_Renderer* renderer);
+
         void eraseCar(SDL_Renderer *renderer);
 
         double getAngleToWheel(Wheel *wheel);

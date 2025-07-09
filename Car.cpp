@@ -62,12 +62,26 @@ void Car::sumWheelForces() {
 }
 
 void Car::drawCar(SDL_Renderer* renderer) {
-    SDL_SetRenderDrawColor(renderer, 255, 0, 0, 0);
+
+    SDL_Texture* tex = getRectangleTexture(renderer);
     SDL_Rect rect{getPositionX(), getPositionY(), getWidth(), getHeight()};
+    double angle = angular_position;
 
-
-    SDL_RenderFillRect(renderer, &rect);
+    SDL_RenderCopyEx(renderer, tex, NULL, &rect, angle, NULL, SDL_FLIP_NONE);
     SDL_RenderPresent(renderer);
+}
+
+SDL_Texture* Car::getRectangleTexture(SDL_Renderer* renderer) {
+    SDL_Texture* tex = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_RGBA8888,
+                                         SDL_TEXTUREACCESS_TARGET, width, height);
+    SDL_SetTextureBlendMode(tex, SDL_BLENDMODE_BLEND);
+    SDL_SetTextureBlendMode(tex, SDL_BLENDMODE_BLEND);
+    SDL_SetRenderTarget(renderer, tex);
+    SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255);
+
+    SDL_RenderClear(renderer);
+    SDL_SetRenderTarget(renderer, NULL);
+    return tex;
 }
 
 void Car::eraseCar(SDL_Renderer* renderer) {
