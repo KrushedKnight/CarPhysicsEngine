@@ -47,9 +47,12 @@ void RigidBody::clearTorques() {
 void RigidBody::incrementTime(double time_interval) {
     acceleration = forces / mass;
 
+    // I flipped pos_y - no idea if this is safe
     pos_x += velocity.x() * time_interval + 0.5 * acceleration.x() * time_interval * time_interval;
-    pos_y += velocity.y() * time_interval + 0.5 * acceleration.y() * time_interval * time_interval;
+    pos_y -= velocity.y() * time_interval + 0.5 * acceleration.y() * time_interval * time_interval;
     velocity = velocity + acceleration * time_interval;
+
+
 
     std::cout << acceleration.y(), acceleration.x();
 
@@ -60,6 +63,8 @@ void RigidBody::incrementTime(double time_interval) {
     clearForces();
     clearTorques();
 }
+
+
 
 
 

@@ -22,6 +22,10 @@ public:
     Wheel();
 
     Eigen::Vector2d calculateFriction();
+    Eigen::Vector2d findInertialForce();
+
+    double getLinearVelocity();
+    void setLinearVelocity(double linearVelocity);
 };
 
 

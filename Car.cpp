@@ -61,6 +61,14 @@ void Car::sumWheelForces() {
     }
 }
 
+void Car::moveWheels() {
+    //TODO: this code is so dumb lmao - maybe the car should exert a force on the wheels
+    for (Wheel* wheel : wheels) {
+        wheel->setLinearVelocity(velocity.norm());
+        wheel->incrementTime(Constants::TIME_INTERVAL);
+    }
+}
+
 void Car::drawCar(SDL_Renderer* renderer) {
 
     SDL_Texture* tex = getRectangleTexture(renderer);
@@ -71,6 +79,7 @@ void Car::drawCar(SDL_Renderer* renderer) {
     SDL_RenderPresent(renderer);
 }
 
+// This method was GPT-generated
 SDL_Texture* Car::getRectangleTexture(SDL_Renderer* renderer) {
     SDL_Texture* tex = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_RGBA8888,
                                          SDL_TEXTUREACCESS_TARGET, width, height);

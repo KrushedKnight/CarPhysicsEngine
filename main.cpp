@@ -78,8 +78,11 @@ SDL_Window* win = SDL_CreateWindow("Car Game", Constants::SDL_WINDOW_X, Constant
         car.eraseCar(renderer);
         car.drawCar(renderer);
         SDL_Delay(Constants::SDL_TIME_INTERVAL);
+        car.moveWheels();
         car.sumWheelForces();
         car.incrementTime(Constants::TIME_INTERVAL);
+
+
 
     }
 
