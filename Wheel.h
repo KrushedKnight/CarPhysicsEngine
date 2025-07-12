@@ -21,11 +21,12 @@ public:
 
     Wheel();
 
-    Eigen::Vector2d calculateFriction();
-    Eigen::Vector2d findInertialForce();
+    Eigen::Vector2d calculateFriction(double carVelocity, double enginePower);
 
     double getLinearVelocity();
     void setLinearVelocity(double linearVelocity);
+
+    void incrementTime(double time_interval);
 };
 
 
