@@ -10,8 +10,6 @@ Eigen::Vector2d Wheel::calculateFriction(Eigen::Vector2d carVelocity) {
 
 
 
-    // angular_velocity += Constants::TIME_INTERVAL * (enginePower - frictionForce * Constants::WHEEL_RADIUS) / moment_of_inertia;
-    //TODO: this needs to account for direction
     double slip = Constants::WHEEL_RADIUS * angular_velocity - carVelocity.norm();
 
     double effective_mass = moment_of_inertia / (Constants::WHEEL_RADIUS * Constants::WHEEL_RADIUS);

@@ -71,7 +71,6 @@ void Car::sumWheelForces() {
 }
 
 void Car::moveWheels() {
-    //TODO: this code is so dumb lmao - maybe the car should exert a force on the wheels
     for (Wheel* wheel : wheels) {
         // wheel->setLinearVelocity(velocity.norm());
         wheel->incrementTime(Constants::TIME_INTERVAL);

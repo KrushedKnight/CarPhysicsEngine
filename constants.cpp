@@ -43,10 +43,3 @@ const double WHEEL_FRICTION = 0.3;
 const double STEERING_RACK = 0.5;
 }
 
-
-// Eigen::Vector2d UP_VECTOR{0, 1};
-// Eigen::Vector2d DOWN_VECTOR{0, -1};
-// Eigen::Vector2d LEFT_VECTOR{-1, 0};
-// Eigen::Vector2d RIGHT_VECTOR{1, 0};
-//
-// Eigen::Vector2d ZERO_VECTOR{0, 0};

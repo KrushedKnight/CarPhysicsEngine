@@ -8,7 +8,6 @@
 #include <cmath>
 #include <eigen-3.4.0/Eigen/Core>
 
-//TODO: where should constants be>
 namespace Constants {
     extern const double TIME_INTERVAL;
     extern const int SDL_TIME_INTERVAL;
