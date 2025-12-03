@@ -42,6 +42,7 @@ const double CAR_MOMENT_OF_INERTIA = (CAR_MASS / 12.0) * (CAR_WIDTH * CAR_WIDTH 
 const double CAR_TOP_SPEED = 100;
 
 
-const double STEERING_RACK = 0.5;
+const double STEERING_RACK = 40.0 / 540.0;
+const double MAX_STEERING_ANGLE = 540;
 }
 

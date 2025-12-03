@@ -45,7 +45,7 @@ namespace Constants {
 
 
     extern const double STEERING_RACK;
-
+    extern const double MAX_STEERING_ANGLE;
 
     extern const double CAR_TOP_SPEED;
 }

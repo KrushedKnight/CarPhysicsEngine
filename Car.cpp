@@ -31,7 +31,12 @@ const int Car::getHeight() {
 
 void Car::applySteering(double amount) {
 
-    steering_angle += amount;
+    if (steering_angle < Constants::MAX_STEERING_ANGLE)
+    {
+        steering_angle += amount;
+        steering_angle = std::min(Constants::MAX_STEERING_ANGLE, steering_angle);
+    }
+
     frontLeft->wheelAngle = steering_angle * Constants::STEERING_RACK;
     frontRight->wheelAngle = steering_angle * Constants::STEERING_RACK;
 }
