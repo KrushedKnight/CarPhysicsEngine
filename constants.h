@@ -31,6 +31,9 @@ namespace Constants {
 
     extern const double DIST_TO_WHEEL;
 
+    extern const double WHEEL_RADIUS;
+    extern const double WHEEL_FRICTION;
+
     extern const double CAR_POWER;
     extern const double BRAKING_POWER;
 
@@ -38,8 +41,6 @@ namespace Constants {
     extern const double CAR_WEIGHT;
     extern const double CAR_MOMENT_OF_INERTIA;
 
-    extern const double WHEEL_RADIUS;
-    extern const double WHEEL_FRICTION;
 
     extern const double STEERING_RACK;
 

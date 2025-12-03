@@ -6,11 +6,14 @@
 
 Wheel::Wheel() : wheelAngle(0) {}
 
-Eigen::Vector2d Wheel::calculateFriction(Eigen::Vector2d carVelocity) {
+Eigen::Vector2d Wheel::calculateFriction(Eigen::Vector2d carVelocity, double carAngularPosition) {
 
+    Eigen::Vector2d wheelDirection{sin(carAngularPosition + wheelAngle), cos(carAngularPosition + wheelAngle)};
 
+    double carVelocityInWheelDir = carVelocity.dot(wheelDirection);
 
-    double slip = Constants::WHEEL_RADIUS * angular_velocity - carVelocity.norm();
+    double wheelLinearVelocity = Constants::WHEEL_RADIUS * angular_velocity;
+    double slip = wheelLinearVelocity - carVelocityInWheelDir;
 
     double effective_mass = moment_of_inertia / (Constants::WHEEL_RADIUS * Constants::WHEEL_RADIUS);
 
@@ -18,15 +21,13 @@ Eigen::Vector2d Wheel::calculateFriction(Eigen::Vector2d carVelocity) {
     double maxFrictionForce = normalForce * frictionCoefficient;
     double frictionForce = std::clamp(requiredFrictionForce, -maxFrictionForce, maxFrictionForce);
 
-
     if (std::abs(slip) < 1e-5) {
         return Eigen::Vector2d::Zero();
     }
 
-
-
-    double x = sin(wheelAngle) * frictionForce;
-    double y = cos(wheelAngle) * frictionForce;
+    // Apply friction force in wheel's rolling direction
+    double x = wheelDirection.x() * frictionForce;
+    double y = wheelDirection.y() * frictionForce;
 
 
     Eigen::Vector2d friction{x, y};

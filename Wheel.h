@@ -17,11 +17,11 @@ public:
 
     double frictionCoefficient{Constants::WHEEL_FRICTION};
 
-    double normalForce{Constants::CAR_WEIGHT};
+    double normalForce{Constants::CAR_WEIGHT / 4.0};
 
     Wheel();
 
-    Eigen::Vector2d calculateFriction(Eigen::Vector2d carVelocity);
+    Eigen::Vector2d calculateFriction(Eigen::Vector2d carVelocity, double carAngularPosition);
 
     double getLinearVelocity();
     void setLinearVelocity(double linearVelocity);
