@@ -53,25 +53,15 @@ void Car::applyBrakes() {
 
 void Car::sumWheelForces() {
     for (Wheel* wheel : wheels) {
-        //should this be moved?
-
-        double angleToWheel = getAngleToWheel(wheel);
-        // double frictionalForce = wheel->calculateFriction(velocity.norm(), engine_power).norm();
-        // Eigen::Vector2d wheelHeading{frictionalForce * sin(angular_position + angleToWheel), frictionalForce * cos(angular_position + angleToWheel)};
-
-
         Eigen::Vector2d wheelHeading = wheel->calculateFriction(velocity, angular_position);
         Eigen::Vector2d heading{sin(angular_position), cos(angular_position)};
         Eigen::Vector2d projection = (wheelHeading.dot(heading) / heading.squaredNorm() * heading);
-        Eigen::Vector2d appliedTorque = wheelHeading - projection;
-
-        double direction;
-        //TODO: need to account for direction here
+        Eigen::Vector2d lateralForce = wheelHeading - projection;
 
 
+        double signedTorque = heading.x() * lateralForce.y() - heading.y() * lateralForce.x();
 
-
-        addTorque((wheelHeading - projection).norm() * Constants::DIST_TO_WHEEL);
+        addTorque(signedTorque * Constants::DIST_TO_WHEEL);
         addForce(projection);
     }
 }
