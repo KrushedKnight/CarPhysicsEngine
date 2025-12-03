@@ -6,7 +6,7 @@
 #define CAR_H
 #include <SDL_rect.h>
 #include <SDL_render.h>
-#include <eigen-3.4.0/Eigen/Core>
+#include <Eigen/Core>
 
 #include "RigidBody.h"
 #include "Wheel.h"

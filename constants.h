@@ -6,7 +6,7 @@
 #define CONSTANTS_H
 
 #include <cmath>
-#include <eigen-3.4.0/Eigen/Core>
+#include <Eigen/Core>
 
 namespace Constants {
     extern const double TIME_INTERVAL;

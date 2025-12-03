@@ -4,7 +4,7 @@
 
 #ifndef RIGIDBODY_H
 #define RIGIDBODY_H
-#include <eigen-3.4.0/Eigen/Dense>
+#include <Eigen/Dense>
 
 
 class RigidBody {
