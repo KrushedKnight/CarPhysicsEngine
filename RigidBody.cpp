@@ -47,14 +47,10 @@ void RigidBody::clearTorques() {
 void RigidBody::incrementTime(double time_interval) {
     acceleration = forces / mass;
 
-    // I flipped pos_y - no idea if this is safe
+    // Y-axis inverted for SDL screen coordinates (positive Y is down on screen)
     pos_x += velocity.x() * time_interval + 0.5 * acceleration.x() * time_interval * time_interval;
     pos_y -= velocity.y() * time_interval + 0.5 * acceleration.y() * time_interval * time_interval;
     velocity = velocity + acceleration * time_interval;
-
-
-
-    std::cout << acceleration.y(), acceleration.x();
 
     angular_acceleration = angular_torque / moment_of_inertia;
     angular_position += angular_velocity * time_interval + 0.5 * angular_acceleration * time_interval * time_interval;

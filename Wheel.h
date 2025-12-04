@@ -21,7 +21,7 @@ public:
 
     Wheel();
 
-    Eigen::Vector2d calculateFriction(Eigen::Vector2d carVelocity, double carAngularPosition);
+    Eigen::Vector2d calculateFriction(Eigen::Vector2d carVelocity, double carAngularPosition, double time_interval);
 
     double getLinearVelocity();
     void setLinearVelocity(double linearVelocity);

@@ -9,35 +9,38 @@ Wheel::Wheel() : wheelAngle(0) {
     moment_of_inertia = Constants::WHEEL_MOMENT_OF_INERTIA;
 }
 
-Eigen::Vector2d Wheel::calculateFriction(Eigen::Vector2d carVelocity, double carAngularPosition) {
-
+Eigen::Vector2d Wheel::calculateFriction(Eigen::Vector2d carVelocity, double carAngularPosition, double time_interval) {
+    // Wheel direction vector in world space (angles in radians)
     Eigen::Vector2d wheelDirection{sin(carAngularPosition + wheelAngle), cos(carAngularPosition + wheelAngle)};
 
+    // Project car velocity onto wheel's rolling direction
     double carVelocityInWheelDir = carVelocity.dot(wheelDirection);
 
-    double wheelLinearVelocity = Constants::WHEEL_RADIUS * angular_velocity;
+    // Calculate wheel's surface velocity from rotation
+    double wheelLinearVelocity = wheelRadius * angular_velocity;
     double slip = wheelLinearVelocity - carVelocityInWheelDir;
 
-    double effective_mass = moment_of_inertia / (Constants::WHEEL_RADIUS * Constants::WHEEL_RADIUS);
-
-    double requiredFrictionForce = (slip / Constants::TIME_INTERVAL) * effective_mass;
-    double maxFrictionForce = normalForce * frictionCoefficient;
-    double frictionForce = std::clamp(requiredFrictionForce, -maxFrictionForce, maxFrictionForce);
-
+    // Early exit for negligible slip to avoid numerical issues
     if (std::abs(slip) < 1e-5) {
         return Eigen::Vector2d::Zero();
     }
 
+    // Effective mass for wheel rotation (converted to linear domain)
+    double effective_mass = moment_of_inertia / (wheelRadius * wheelRadius);
+
+    // Calculate required friction force to eliminate slip in one timestep
+    double requiredFrictionForce = (slip / time_interval) * effective_mass;
+
+    // Limit friction by Coulomb friction law: F_friction <= μ * F_normal
+    double maxFrictionForce = normalForce * frictionCoefficient;
+    double frictionForce = std::clamp(requiredFrictionForce, -maxFrictionForce, maxFrictionForce);
+
     // Apply friction force in wheel's rolling direction
-    double x = wheelDirection.x() * frictionForce;
-    double y = wheelDirection.y() * frictionForce;
+    Eigen::Vector2d friction = wheelDirection * frictionForce;
 
-
-    Eigen::Vector2d friction{x, y};
-
+    // Apply counter-torque to wheel (opposes slip)
     double frictionTorque = frictionForce * wheelRadius;
     addTorque(-frictionTorque);
-
 
     return friction;
 }
@@ -45,11 +48,11 @@ Eigen::Vector2d Wheel::calculateFriction(Eigen::Vector2d carVelocity, double car
 
 
 double Wheel::getLinearVelocity() {
-    return (angular_velocity*Constants::WHEEL_RADIUS);
+    return angular_velocity * wheelRadius;
 }
 
 void Wheel::setLinearVelocity(double linearVelocity) {
-    angular_velocity = linearVelocity / Constants::WHEEL_RADIUS;
+    angular_velocity = linearVelocity / wheelRadius;
 }
 
 void Wheel::incrementTime(double time_interval) {
