@@ -19,3 +19,6 @@ add_executable(SimpleTrafficGame main.cpp
         Wheel.h
         constants.cpp)
 target_link_libraries(SimpleTrafficGame ${SDL2_LIBRARIES})
+
+# Add tests subdirectory
+add_subdirectory(tests)
