@@ -37,12 +37,14 @@ SDL_Window* win = SDL_CreateWindow("Car Game", Constants::SDL_WINDOW_X, Constant
 
     SDL_Event event;
 
-    //TODO: redo this mess
     Car car{Constants::CENTER_X, Constants::CENTER_Y, Constants::CAR_WIDTH, Constants::CAR_LENGTH};
 
+    // Steering input rate in radians per frame (about 5 degrees)
+    const double STEERING_INCREMENT = 5.0 * Constants::DEG_TO_RAD;
 
-
-    for (int i =0; i < 10000; i++) {
+    bool running = true;
+    while (running) {
+        // Process all pending events
         while (SDL_PollEvent(&event)) {
             switch (event.type) {
                 case SDL_KEYDOWN:
@@ -53,36 +55,39 @@ SDL_Window* win = SDL_CreateWindow("Car Game", Constants::SDL_WINDOW_X, Constant
                         case SDLK_s:
                             car.applyBrakes();
                             break;
-
                         case SDLK_a:
-                            car.applySteering(-50);
+                            car.applySteering(-STEERING_INCREMENT);  // Convert to radians
                             break;
                         case SDLK_d:
-                            car.applySteering(50);
+                            car.applySteering(STEERING_INCREMENT);   // Convert to radians
+                            break;
+                        case SDLK_ESCAPE:
+                        case SDLK_q:
+                            running = false;
                             break;
                     }
                     break;
 
-                case SDL_KEYUP:
+                case SDL_QUIT:
+                    running = false;
                     break;
 
-
-
-
-                case SDL_QUIT:
+                default:
                     break;
             }
         }
+
+        // Render
         car.eraseCar(renderer);
         car.drawCar(renderer);
+
+        // Delay to match physics timestep
         SDL_Delay(Constants::SDL_TIME_INTERVAL);
 
+        // Physics update
         car.sumWheelForces();
         car.incrementTime(Constants::TIME_INTERVAL);
         car.moveWheels();
-
-
-
     }
 
 
