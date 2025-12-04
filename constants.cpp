@@ -38,8 +38,8 @@ const double WHEEL_MASS = 20.0;                        // 20kg (wheel + tire)
 const double WHEEL_MOMENT_OF_INERTIA = 0.5 * WHEEL_MASS * WHEEL_RADIUS * WHEEL_RADIUS; // I = 0.5*m*r² (solid disk)
 
 // Engine and braking (torque values in N⋅m)
-const double CAR_POWER = 200.0;                        // 200 N⋅m engine torque
-const double BRAKING_POWER = 150.0;                    // 150 N⋅m braking torque (positive, sign applied in code)
+const double CAR_POWER = 15000.0;
+const double BRAKING_POWER = 10000.0;
 
 // Car physical properties
 const double CAR_MASS = 1200.0;                        // 1200kg (realistic mid-size car)
