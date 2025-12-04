@@ -34,8 +34,8 @@ namespace Constants {
     extern const double WHEEL_MOMENT_OF_INERTIA; // Wheel rotational inertia (kg⋅m²)
 
     // Engine and braking
-    extern const double CAR_POWER;              // Engine torque (N⋅m)
-    extern const double BRAKING_POWER;          // Braking torque (N⋅m)
+    extern const double CAR_POWER;              // Engine force (N)
+    extern const double BRAKING_POWER;          // Braking force (N)
 
     // Car physical properties
     extern const double CAR_MASS;               // Car body mass (kg)
@@ -51,5 +51,8 @@ namespace Constants {
     // Math constants
     extern const double DEG_TO_RAD;             // Degree to radian conversion
     extern const double RAD_TO_DEG;             // Radian to degree conversion
+
+    // Unit conversion
+    extern const double PIXELS_PER_METER;       // Pixels per meter (for physics/rendering conversion)
 }
 #endif //CONSTANTS_H

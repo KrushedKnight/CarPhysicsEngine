@@ -47,9 +47,14 @@ void RigidBody::clearTorques() {
 void RigidBody::incrementTime(double time_interval) {
     acceleration = forces / mass;
 
+    // Physics calculates displacement in meters, convert to pixels for rendering
     // Y-axis inverted for SDL screen coordinates (positive Y is down on screen)
-    pos_x += velocity.x() * time_interval + 0.5 * acceleration.x() * time_interval * time_interval;
-    pos_y -= velocity.y() * time_interval + 0.5 * acceleration.y() * time_interval * time_interval;
+    double dx_meters = velocity.x() * time_interval + 0.5 * acceleration.x() * time_interval * time_interval;
+    double dy_meters = velocity.y() * time_interval + 0.5 * acceleration.y() * time_interval * time_interval;
+
+    pos_x += dx_meters * Constants::PIXELS_PER_METER;
+    pos_y -= dy_meters * Constants::PIXELS_PER_METER;
+
     velocity = velocity + acceleration * time_interval;
 
     angular_acceleration = angular_torque / moment_of_inertia;

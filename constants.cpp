@@ -11,6 +11,9 @@ namespace Constants {
 const double DEG_TO_RAD = M_PI / 180.0;
 const double RAD_TO_DEG = 180.0 / M_PI;
 
+// Unit conversion (1 pixel = 0.1 meters, so 10 pixels = 1 meter)
+const double PIXELS_PER_METER = 10.0;
+
 // Time constants - MUST MATCH for consistent physics
 const double TIME_INTERVAL = 0.016;                    // 16ms = 62.5 FPS
 const int SDL_TIME_INTERVAL = 16;                      // 16ms (matches physics timestep)
@@ -28,8 +31,9 @@ const double CENTER_Y = SDL_WINDOW_LENGTH / 2.0;
 const int CAR_WIDTH = std::floor(25.0 * SCALING_FACTOR);   // ~2.5m real width
 const int CAR_LENGTH = std::floor(45.0 * SCALING_FACTOR);  // ~4.5m real length
 
-// Distance from car center to wheel (pixels) - half diagonal for corner-mounted wheels
-const double DIST_TO_WHEEL = std::sqrt(CAR_WIDTH * CAR_WIDTH + CAR_LENGTH * CAR_LENGTH) / 2.0;
+// Distance from car center to wheel (METERS for physics calculations)
+// Using 1 pixel = 0.1 meter scaling
+const double DIST_TO_WHEEL = std::sqrt((CAR_WIDTH * 0.1) * (CAR_WIDTH * 0.1) + (CAR_LENGTH * 0.1) * (CAR_LENGTH * 0.1)) / 2.0;
 
 // Wheel physical properties (realistic scaled values)
 const double WHEEL_RADIUS = 0.33;                      // 0.33m = 330mm (realistic car wheel)
@@ -37,7 +41,7 @@ const double WHEEL_FRICTION = 0.7;                     // Dry asphalt tire frict
 const double WHEEL_MASS = 20.0;                        // 20kg (wheel + tire)
 const double WHEEL_MOMENT_OF_INERTIA = 0.5 * WHEEL_MASS * WHEEL_RADIUS * WHEEL_RADIUS; // I = 0.5*m*r² (solid disk)
 
-// Engine and braking (torque values in N⋅m)
+// Engine and braking (force values in Newtons, converted to torque by multiplying with wheel radius)
 const double CAR_POWER = 15000.0;
 const double BRAKING_POWER = 10000.0;
 
