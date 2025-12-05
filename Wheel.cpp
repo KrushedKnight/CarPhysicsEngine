@@ -10,39 +10,48 @@ Wheel::Wheel() : wheelAngle(0) {
 }
 
 Eigen::Vector2d Wheel::calculateFriction(Eigen::Vector2d carVelocity, double carAngularPosition, double time_interval) {
-    // Wheel direction vector in world space (angles in radians)
+    // Wheel direction vectors in world space (angles in radians)
     Eigen::Vector2d wheelDirection{sin(carAngularPosition + wheelAngle), cos(carAngularPosition + wheelAngle)};
+    Eigen::Vector2d lateralDirection{cos(carAngularPosition + wheelAngle), -sin(carAngularPosition + wheelAngle)};
 
-    // Project car velocity onto wheel's rolling direction
+    // LONGITUDINAL FRICTION (rolling direction)
     double carVelocityInWheelDir = carVelocity.dot(wheelDirection);
-
-    // Calculate wheel's surface velocity from rotation
     double wheelLinearVelocity = wheelRadius * angular_velocity;
-    double slip = wheelLinearVelocity - carVelocityInWheelDir;
+    double longitudinalSlip = wheelLinearVelocity - carVelocityInWheelDir;
 
-    // Early exit for negligible slip to avoid numerical issues
-    if (std::abs(slip) < 1e-5) {
-        return Eigen::Vector2d::Zero();
+    double effective_mass = moment_of_inertia / (wheelRadius * wheelRadius);
+    double maxFrictionForce = normalForce * frictionCoefficient;
+
+    double longitudinalFriction = 0.0;
+    if (std::abs(longitudinalSlip) > 1e-5) {
+        double requiredForce = (longitudinalSlip / time_interval) * effective_mass;
+        longitudinalFriction = std::clamp(requiredForce, -maxFrictionForce, maxFrictionForce);
+
+        double frictionTorque = longitudinalFriction * wheelRadius;
+        addTorque(-frictionTorque);
     }
 
-    // Effective mass for wheel rotation (converted to linear domain)
-    double effective_mass = moment_of_inertia / (wheelRadius * wheelRadius);
+    // LATERAL FRICTION (sideways/perpendicular direction)
+    double lateralVelocity = carVelocity.dot(lateralDirection);
+    double lateralFriction = 0.0;
 
-    // Calculate required friction force to eliminate slip in one timestep
-    double requiredFrictionForce = (slip / time_interval) * effective_mass;
+    if (std::abs(lateralVelocity) > 1e-5) {
+        // Lateral friction resists sideways motion (no wheel rotation involved)
+        double requiredLateralForce = -(lateralVelocity / time_interval) * effective_mass;
+        lateralFriction = std::clamp(requiredLateralForce, -maxFrictionForce, maxFrictionForce);
+    }
 
-    // Limit friction by Coulomb friction law: F_friction <= μ * F_normal
-    double maxFrictionForce = normalForce * frictionCoefficient;
-    double frictionForce = std::clamp(requiredFrictionForce, -maxFrictionForce, maxFrictionForce);
+    // Combined friction force (Pythagorean limit to stay within friction circle)
+    double combinedMagnitude = std::sqrt(longitudinalFriction * longitudinalFriction +
+                                         lateralFriction * lateralFriction);
 
-    // Apply friction force in wheel's rolling direction
-    Eigen::Vector2d friction = wheelDirection * frictionForce;
+    if (combinedMagnitude > maxFrictionForce) {
+        double scale = maxFrictionForce / combinedMagnitude;
+        longitudinalFriction *= scale;
+        lateralFriction *= scale;
+    }
 
-    // Apply counter-torque to wheel (opposes slip)
-    double frictionTorque = frictionForce * wheelRadius;
-    addTorque(-frictionTorque);
-
-    return friction;
+    return wheelDirection * longitudinalFriction + lateralDirection * lateralFriction;
 }
 
 

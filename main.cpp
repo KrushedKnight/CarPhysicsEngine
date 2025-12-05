@@ -39,8 +39,8 @@ SDL_Window* win = SDL_CreateWindow("Car Game", Constants::SDL_WINDOW_X, Constant
 
     Car car{Constants::CENTER_X, Constants::CENTER_Y, Constants::CAR_WIDTH, Constants::CAR_LENGTH};
 
-    // Steering input rate in radians per frame (about 5 degrees)
-    const double STEERING_INCREMENT = 5.0 * Constants::DEG_TO_RAD;
+    // Steering input rate in radians per frame (about 8 degrees)
+    const double STEERING_INCREMENT = 8.0 * Constants::DEG_TO_RAD;
 
     bool running = true;
     while (running) {

@@ -57,8 +57,8 @@ const double CAR_MOMENT_OF_INERTIA = (CAR_MASS / 12.0) * (
 const double CAR_TOP_SPEED = 50.0;                     // 50 m/s = 180 km/h
 
 // Steering properties
-const double STEERING_RACK = 1.0;                      // 1:1 input to wheel angle ratio
-const double MAX_STEERING_ANGLE = 35.0 * DEG_TO_RAD;   // 35 degrees max wheel angle (realistic)
-const double FORCE_FEEDBACK_DECAY = 0.95;              // 5% centering force per timestep
+const double STEERING_RACK = 1.0;
+const double MAX_STEERING_ANGLE = 45.0 * DEG_TO_RAD;
+const double FORCE_FEEDBACK_DECAY = 0.95;
 }
 
