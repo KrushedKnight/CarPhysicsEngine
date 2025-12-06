@@ -61,6 +61,12 @@ void RigidBody::incrementTime(double time_interval) {
     angular_position += angular_velocity * time_interval + 0.5 * angular_acceleration * time_interval * time_interval;
     angular_velocity += angular_acceleration * time_interval;
 
+    // Normalize angular position to [-π, π] to prevent numerical issues
+    // This keeps the angle in a consistent range for trigonometric calculations
+    if (std::isfinite(angular_position)) {
+        angular_position = std::remainder(angular_position, 2.0 * M_PI);
+    }
+
     // Debug output
     static int frame_count = 0;
     if (frame_count++ % 30 == 0) {

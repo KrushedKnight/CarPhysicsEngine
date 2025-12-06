@@ -89,29 +89,32 @@ void Car::sumWheelForces() {
         {halfWidth, -halfLength}    // Back-right
     };
 
+    // Pre-calculate rotation transformation for efficiency
+    double cos_angle = cos(angular_position);
+    double sin_angle = sin(angular_position);
+
     for (int i = 0; i < 4; i++) {
         Wheel* wheel = wheels[i];
 
-        // Velocity at wheel = car center velocity + rotational velocity component
-        // v_wheel = v_center + ω × r (in 2D: v_wheel = v_center + [-ω*r_y, ω*r_x])
-        Eigen::Vector2d rotationalVel(-angular_velocity * wheelPositions[i].y(),
-                                       angular_velocity * wheelPositions[i].x());
-        Eigen::Vector2d wheelVelocity = velocity + rotationalVel;
-
-        // Calculate friction force from wheel-ground interaction (returns force in world coordinates)
-        Eigen::Vector2d wheelForce = wheel->calculateFriction(wheelVelocity, angular_position, Constants::TIME_INTERVAL);
-
-        // Transform wheel position from local to world coordinates for torque calculation
-        // Rotation matrix: [cos(θ) -sin(θ); sin(θ) cos(θ)]
-        double cos_angle = cos(angular_position);
-        double sin_angle = sin(angular_position);
+        // Transform wheel position from local to world coordinates
         Eigen::Vector2d wheelPosWorld(
             cos_angle * wheelPositions[i].x() - sin_angle * wheelPositions[i].y(),
             sin_angle * wheelPositions[i].x() + cos_angle * wheelPositions[i].y()
         );
 
+        // Calculate rotational velocity in world coordinates: v_rot = ω × r_world
+        // In 2D: v_rot = [-ω*r_y, ω*r_x]
+        Eigen::Vector2d rotationalVel(-angular_velocity * wheelPosWorld.y(),
+                                       angular_velocity * wheelPosWorld.x());
+
+        // Total wheel velocity in world coordinates
+        Eigen::Vector2d wheelVelocity = velocity + rotationalVel;
+
+        // Calculate friction force from wheel-ground interaction (returns force in world coordinates)
+        Eigen::Vector2d wheelForce = wheel->calculateFriction(wheelVelocity, angular_position, Constants::TIME_INTERVAL);
+
         // Calculate torque: τ = r × F (2D cross product: r_x * F_y - r_y * F_x)
-        // Now both vectors are in world coordinates
+        // Both vectors are in world coordinates
         double torque = wheelPosWorld.x() * wheelForce.y() - wheelPosWorld.y() * wheelForce.x();
 
         addTorque(torque);

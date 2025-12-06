@@ -11,6 +11,7 @@ Wheel::Wheel() : wheelAngle(0) {
 
 Eigen::Vector2d Wheel::calculateFriction(Eigen::Vector2d carVelocity, double carAngularPosition, double time_interval) {
     // Wheel direction vectors in world space (angles in radians)
+    // wheelAngle is relative to car's forward direction
     Eigen::Vector2d wheelDirection{sin(carAngularPosition + wheelAngle), cos(carAngularPosition + wheelAngle)};
     Eigen::Vector2d lateralDirection{cos(carAngularPosition + wheelAngle), -sin(carAngularPosition + wheelAngle)};
 
