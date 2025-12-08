@@ -18,7 +18,7 @@ Eigen::Vector2d Wheel::calculateFriction(Eigen::Vector2d wheelVelocityLocal, dou
 
     double longitudinalFriction = 0.0;
     if (std::abs(longitudinalSlip) > 1e-5) {
-        const double LONGITUDINAL_FRICTION_RESPONSE = 0.2;
+        const double LONGITUDINAL_FRICTION_RESPONSE = 0.4;
         double requiredForce = (longitudinalSlip / time_interval) * wheelMass * LONGITUDINAL_FRICTION_RESPONSE;
         longitudinalFriction = std::clamp(requiredForce, -maxFrictionForce, maxFrictionForce);
 
@@ -31,7 +31,7 @@ Eigen::Vector2d Wheel::calculateFriction(Eigen::Vector2d wheelVelocityLocal, dou
     double lateralFriction = 0.0;
 
     if (std::abs(lateralVelocity) > 1e-5) {
-        const double LATERAL_FRICTION_RESPONSE = 0.15;
+        const double LATERAL_FRICTION_RESPONSE = 0.35;
         double requiredLateralForce = -(lateralVelocity / time_interval) * wheelMass * LATERAL_FRICTION_RESPONSE;
         lateralFriction = std::clamp(requiredLateralForce, -maxFrictionForce, maxFrictionForce);
     }
@@ -44,6 +44,9 @@ Eigen::Vector2d Wheel::calculateFriction(Eigen::Vector2d wheelVelocityLocal, dou
         longitudinalFriction *= scale;
         lateralFriction *= scale;
     }
+
+    // Calculate grip level (0.0 = no force, 1.0 = at friction limit)
+    gripLevel = (maxFrictionForce > 0.0) ? (combinedMagnitude / maxFrictionForce) : 0.0;
 
     return wheelForward * longitudinalFriction + wheelRight * lateralFriction;
 }

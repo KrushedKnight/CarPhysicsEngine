@@ -14,6 +14,8 @@ public:
 
     double normalForce{Constants::CAR_WEIGHT / 4.0};
 
+    double gripLevel{0.0};  // 0.0 = no force, 1.0 = maximum grip (sliding)
+
     Wheel();
 
     Eigen::Vector2d calculateFriction(Eigen::Vector2d wheelVelocityLocal, double time_interval);

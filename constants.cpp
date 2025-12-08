@@ -23,7 +23,7 @@ const int CAR_WIDTH = std::floor(25.0 * SCALING_FACTOR);
 const int CAR_LENGTH = std::floor(45.0 * SCALING_FACTOR);
 
 const double WHEEL_RADIUS = 0.33;
-const double WHEEL_FRICTION = 0.7;
+const double WHEEL_FRICTION = 1.0;
 const double WHEEL_MASS = 20.0;
 const double WHEEL_MOMENT_OF_INERTIA = 0.5 * WHEEL_MASS * WHEEL_RADIUS * WHEEL_RADIUS;
 
