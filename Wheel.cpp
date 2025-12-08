@@ -31,9 +31,32 @@ Eigen::Vector2d Wheel::calculateFriction(Eigen::Vector2d wheelVelocityLocal, dou
     double lateralFriction = 0.0;
 
     if (std::abs(lateralVelocity) > 1e-5) {
-        const double LATERAL_FRICTION_RESPONSE = 0.35;
-        double requiredLateralForce = -(lateralVelocity / time_interval) * wheelMass * LATERAL_FRICTION_RESPONSE;
-        lateralFriction = std::clamp(requiredLateralForce, -maxFrictionForce, maxFrictionForce);
+        double speed = std::sqrt(velocityInWheelDir * velocityInWheelDir +
+                                 lateralVelocity * lateralVelocity);
+
+        if (speed < Constants::TIRE_LOW_SPEED_THRESHOLD) {
+            const double LATERAL_FRICTION_RESPONSE = 0.35;
+            double requiredLateralForce = -(lateralVelocity / time_interval) * wheelMass * LATERAL_FRICTION_RESPONSE;
+            lateralFriction = std::clamp(requiredLateralForce, -maxFrictionForce, maxFrictionForce);
+        } else {
+            double slipAngle = std::atan2(std::abs(lateralVelocity), std::abs(velocityInWheelDir));
+
+            double forceMagnitude = 0.0;
+
+            if (slipAngle <= Constants::TIRE_PEAK_SLIP_ANGLE) {
+                forceMagnitude = (slipAngle / Constants::TIRE_PEAK_SLIP_ANGLE) * maxFrictionForce;
+            } else if (slipAngle <= Constants::TIRE_TRANSITION_SLIP_ANGLE) {
+                double peakForce = maxFrictionForce;
+                double slideForce = maxFrictionForce * Constants::TIRE_SLIDE_RATIO;
+                double t = (slipAngle - Constants::TIRE_PEAK_SLIP_ANGLE) /
+                          (Constants::TIRE_TRANSITION_SLIP_ANGLE - Constants::TIRE_PEAK_SLIP_ANGLE);
+                forceMagnitude = peakForce - t * (peakForce - slideForce);
+            } else {
+                forceMagnitude = maxFrictionForce * Constants::TIRE_SLIDE_RATIO;
+            }
+
+            lateralFriction = -std::copysign(forceMagnitude, lateralVelocity);
+        }
     }
 
     double combinedMagnitude = std::sqrt(longitudinalFriction * longitudinalFriction +
@@ -45,7 +68,6 @@ Eigen::Vector2d Wheel::calculateFriction(Eigen::Vector2d wheelVelocityLocal, dou
         lateralFriction *= scale;
     }
 
-    // Calculate grip level (0.0 = no force, 1.0 = at friction limit)
     gripLevel = (maxFrictionForce > 0.0) ? (combinedMagnitude / maxFrictionForce) : 0.0;
 
     return wheelForward * longitudinalFriction + wheelRight * lateralFriction;

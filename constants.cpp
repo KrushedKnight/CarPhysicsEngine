@@ -27,6 +27,12 @@ const double WHEEL_FRICTION = 1.0;
 const double WHEEL_MASS = 20.0;
 const double WHEEL_MOMENT_OF_INERTIA = 0.5 * WHEEL_MASS * WHEEL_RADIUS * WHEEL_RADIUS;
 
+
+const double TIRE_PEAK_SLIP_ANGLE = 8.0 * DEG_TO_RAD;  
+const double TIRE_TRANSITION_SLIP_ANGLE = 15.0 * DEG_TO_RAD; 
+const double TIRE_SLIDE_RATIO = 0.75;                 
+const double TIRE_LOW_SPEED_THRESHOLD = 0.5;               
+
 const double CAR_POWER = 4000.0;
 const double BRAKING_POWER = 4000.0;
 

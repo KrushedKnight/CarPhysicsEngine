@@ -24,6 +24,11 @@ namespace Constants {
     extern const double WHEEL_MASS;
     extern const double WHEEL_MOMENT_OF_INERTIA;
 
+    extern const double TIRE_PEAK_SLIP_ANGLE;
+    extern const double TIRE_TRANSITION_SLIP_ANGLE;
+    extern const double TIRE_SLIDE_RATIO;
+    extern const double TIRE_LOW_SPEED_THRESHOLD;
+
     extern const double CAR_POWER;
     extern const double BRAKING_POWER;
 
