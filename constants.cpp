@@ -47,4 +47,8 @@ const double CAR_TOP_SPEED = 50.0;
 const double STEERING_RACK = 1.0;
 const double MAX_STEERING_ANGLE = 45.0 * DEG_TO_RAD;
 const double FORCE_FEEDBACK_DECAY = 0.97;
+
+const double WHEELBASE = (CAR_LENGTH / PIXELS_PER_METER);
+const double TRACK_WIDTH = (CAR_WIDTH / PIXELS_PER_METER);
+const double CG_HEIGHT = 0.5;
 }

@@ -69,6 +69,8 @@ void Car::applyBrakes() {
 }
 
 void Car::sumWheelForces() {
+    updateLoadTransfer();
+
     double halfWidth = (Constants::CAR_WIDTH / 10.0) / 2.0;
     double halfLength = (Constants::CAR_LENGTH / 10.0) / 2.0;
 
@@ -131,6 +133,32 @@ void Car::moveWheels() {
         wheel->incrementTime(Constants::TIME_INTERVAL);
     }
     applyForceFeedback();
+}
+
+void Car::updateLoadTransfer() {
+    double cos_angle = cos(angular_position);
+    double sin_angle = sin(angular_position);
+
+    double ax_local = acceleration.x() * cos_angle - acceleration.y() * sin_angle;
+    double ay_local = acceleration.x() * sin_angle + acceleration.y() * cos_angle;
+
+    double wheelbase = Constants::WHEELBASE;
+    double track_width = Constants::TRACK_WIDTH;
+    double cg_height = Constants::CG_HEIGHT;
+    double weight = Constants::CAR_WEIGHT;
+    double nominal_load = weight / 4.0;
+
+    double dFz_longitudinal = -mass * ax_local * cg_height / wheelbase;
+    double dFz_lateral = -mass * ay_local * cg_height / track_width;
+
+    frontLeft->normalForce = nominal_load + dFz_longitudinal - dFz_lateral;
+    frontRight->normalForce = nominal_load + dFz_longitudinal + dFz_lateral;
+    backLeft->normalForce = nominal_load - dFz_longitudinal - dFz_lateral;
+    backRight->normalForce = nominal_load - dFz_longitudinal + dFz_lateral;
+
+    for (Wheel* wheel : wheels) {
+        wheel->normalForce = std::max(100.0, wheel->normalForce);
+    }
 }
 
 void Car::drawCar(SDL_Renderer* renderer) {

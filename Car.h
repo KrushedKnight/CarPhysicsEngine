@@ -42,6 +42,7 @@ class Car : public RigidBody {
 
         void sumWheelForces();
         void moveWheels();
+        void updateLoadTransfer();
 
     private:
         const double width;

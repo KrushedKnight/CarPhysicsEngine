@@ -41,6 +41,10 @@ namespace Constants {
     extern const double MAX_STEERING_ANGLE;
     extern const double FORCE_FEEDBACK_DECAY;
 
+    extern const double WHEELBASE;
+    extern const double TRACK_WIDTH;
+    extern const double CG_HEIGHT;
+
     extern const double DEG_TO_RAD;
     extern const double RAD_TO_DEG;
 
