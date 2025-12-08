@@ -46,7 +46,7 @@ SDL_Window* win = SDL_CreateWindow("Car Game", Constants::SDL_WINDOW_X, Constant
         std::cerr << "Warning: Failed to initialize GUI" << std::endl;
     }
 
-    const double STEERING_INCREMENT = 8.0 * Constants::DEG_TO_RAD;
+    const double STEERING_INCREMENT = 2.0 * Constants::DEG_TO_RAD;
 
     bool running = true;
     while (running) {
