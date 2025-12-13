@@ -18,7 +18,24 @@ int main(int argc, char* argv[]) {
         return 1;
     }
 
-SDL_Window* win = SDL_CreateWindow("Car Game", Constants::SDL_WINDOW_X, Constants::SDL_WINDOW_Y, Constants::SDL_WINDOW_WIDTH, Constants::SDL_WINDOW_LENGTH, SDL_WINDOW_SHOWN);
+    // Get actual screen dimensions
+    SDL_DisplayMode displayMode;
+    if (SDL_GetCurrentDisplayMode(0, &displayMode) != 0) {
+        std::cerr << "SDL_GetCurrentDisplayMode Error: " << SDL_GetError() << std::endl;
+        return 1;
+    }
+
+    int screenWidth = displayMode.w;
+    int screenHeight = displayMode.h;
+
+    // Initialize screen-dependent constants
+    Constants::initializeScreenDependentConstants(screenWidth, screenHeight);
+
+    // Create fullscreen window
+    SDL_Window* win = SDL_CreateWindow("Car Game",
+        SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,
+        Constants::SDL_WINDOW_WIDTH, Constants::SDL_WINDOW_LENGTH,
+        SDL_WINDOW_FULLSCREEN_DESKTOP);
     if (!win) {
         std::cerr << "SDL_CreateWindow Error: " << SDL_GetError() << std::endl;
         SDL_Quit();
@@ -40,9 +57,10 @@ SDL_Window* win = SDL_CreateWindow("Car Game", Constants::SDL_WINDOW_X, Constant
 
     Car car{Constants::CENTER_X, Constants::CENTER_Y, Constants::CAR_WIDTH, Constants::CAR_LENGTH};
 
-    // Initialize GUI
+    // Initialize GUI with screen-relative font size
     GUI gui;
-    if (!gui.initialize()) {
+    int fontSize = std::max(12, screenHeight / 60);  // Scale font size with screen height
+    if (!gui.initialize(nullptr, fontSize)) {
         std::cerr << "Warning: Failed to initialize GUI" << std::endl;
     }
 
