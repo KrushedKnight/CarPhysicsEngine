@@ -79,16 +79,17 @@ SDL_Window* win = SDL_CreateWindow("Car Game", Constants::SDL_WINDOW_X, Constant
             car.applySteering(-STEERING_INCREMENT);
         }
 
+        car.sumWheelForces();
+
         car.eraseCar(renderer);
         car.drawCar(renderer);
         gui.drawHUD(renderer, car);
         SDL_RenderPresent(renderer);
 
-        SDL_Delay(Constants::SDL_TIME_INTERVAL);
-
-        car.sumWheelForces();
         car.incrementTime(Constants::TIME_INTERVAL);
         car.moveWheels();
+
+        SDL_Delay(Constants::SDL_TIME_INTERVAL);
     }
 
     SDL_DestroyWindow(win);
