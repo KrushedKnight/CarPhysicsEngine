@@ -47,8 +47,8 @@ double CAR_MOMENT_OF_INERTIA = (CAR_MASS / 12.0) * (
 );
 const double CAR_TOP_SPEED = 50.0;
 
-const double STEERING_RACK = 1.0;
-const double MAX_STEERING_ANGLE = 45.0 * DEG_TO_RAD;
+const double STEERING_RACK = 1.5;
+const double MAX_STEERING_ANGLE = 55.0 * DEG_TO_RAD;
 const double FORCE_FEEDBACK_DECAY = 0.97;
 
 double WHEELBASE = (CAR_LENGTH / PIXELS_PER_METER);
