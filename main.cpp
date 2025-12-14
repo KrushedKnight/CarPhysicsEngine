@@ -18,7 +18,6 @@ int main(int argc, char* argv[]) {
         return 1;
     }
 
-    // Get actual screen dimensions
     SDL_DisplayMode displayMode;
     if (SDL_GetCurrentDisplayMode(0, &displayMode) != 0) {
         std::cerr << "SDL_GetCurrentDisplayMode Error: " << SDL_GetError() << std::endl;
@@ -28,10 +27,8 @@ int main(int argc, char* argv[]) {
     int screenWidth = displayMode.w;
     int screenHeight = displayMode.h;
 
-    // Initialize screen-dependent constants
     Constants::initializeScreenDependentConstants(screenWidth, screenHeight);
 
-    // Create fullscreen window
     SDL_Window* win = SDL_CreateWindow("Car Game",
         SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,
         Constants::SDL_WINDOW_WIDTH, Constants::SDL_WINDOW_LENGTH,
@@ -57,9 +54,8 @@ int main(int argc, char* argv[]) {
 
     Car car{Constants::CENTER_X, Constants::CENTER_Y, Constants::CAR_WIDTH, Constants::CAR_LENGTH};
 
-    // Initialize GUI with screen-relative font size
     GUI gui;
-    int fontSize = std::max(12, screenHeight / 60);  // Scale font size with screen height
+    int fontSize = std::max(12, screenHeight / 60);
     if (!gui.initialize(nullptr, fontSize)) {
         std::cerr << "Warning: Failed to initialize GUI" << std::endl;
     }
@@ -86,7 +82,6 @@ int main(int argc, char* argv[]) {
 
         const Uint8* keystate = SDL_GetKeyboardState(NULL);
 
-        // Track input states for graphing
         double throttle = 0.0;
         double brake = 0.0;
         double steering = 0.0;
@@ -110,7 +105,6 @@ int main(int argc, char* argv[]) {
 
         car.sumWheelForces();
 
-        // Update graphs with current car state and inputs
         gui.updateGraphs(car, throttle, brake, steering);
 
         car.eraseCar(renderer);

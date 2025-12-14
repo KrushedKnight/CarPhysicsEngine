@@ -12,7 +12,6 @@ namespace Constants {
     extern const int SDL_WINDOW_X;
     extern const int SDL_WINDOW_Y;
 
-    // Mutable screen dimensions (set at runtime)
     extern int SDL_WINDOW_WIDTH;
     extern int SDL_WINDOW_LENGTH;
     extern double CENTER_X;
@@ -55,7 +54,6 @@ namespace Constants {
 
     extern const double PIXELS_PER_METER;
 
-    // Initialize screen-dependent constants
     void initializeScreenDependentConstants(int screenWidth, int screenHeight);
 }
 #endif
