@@ -3,7 +3,9 @@
 #include <cmath>
 #include <iostream>
 
-Car::Car(double x, double y, int w, int h) : width(w), height(h), steering_angle(0) {
+#include "cmake-build-debug/_deps/googletest-src/googlemock/include/gmock/gmock-spec-builders.h"
+
+Car::Car(double x, double y, int w, int h) : width(w), height(h) {
     pos_x = x;
     pos_y = y;
 
@@ -53,9 +55,17 @@ void Car::applyForceFeedback()
 void Car::applyEngineTorque() {
     Wheel* rearWheels[] = {backLeft, backRight};
     for (Wheel* wheel : rearWheels) {
-        if (wheel->angular_velocity * wheel->wheelRadius < Constants::CAR_TOP_SPEED) {
-            wheel->addTorque(wheel->wheelRadius * engine_power);
+        if (wheel->angular_velocity * wheel->wheelRadius >= Constants::CAR_TOP_SPEED) {
+            return;
         }
+
+        double slipRatio = wheel->calculateSlipRatio(wheel->velocity); //make sure this vector is correct
+        double error = Constants::TIRE_SLIP_SETPOINT - slipRatio;
+        double changeInSlip = slipRatio - previous_slip;
+        double adjustedTorque = Constants::CAR_POWER * wheel->wheelRadius + Constants::TIRE_TCS_kP * error - Constants::TIRE_TCS_kD * changeInSlip;
+
+        wheel->addTorque(adjustedTorque);
+        previous_slip = slipRatio;
     }
 }
 

@@ -5,6 +5,23 @@ Wheel::Wheel() : wheelAngle(0) {
     moment_of_inertia = Constants::WHEEL_MOMENT_OF_INERTIA;
 }
 
+double Wheel::calculateSlipRatio(Eigen::Vector2d wheelVelocityLocal) {
+    Eigen::Vector2d wheelForward{sin(wheelAngle), cos(wheelAngle)};
+
+    double vehicleSpeed = wheelVelocityLocal.dot(wheelForward);
+
+    double wheelSpeed = wheelRadius * angular_velocity;
+
+
+    if (std::abs(vehicleSpeed) < 0.1) {
+        return 0.0;
+    }
+
+    double slipRatio = (wheelSpeed - vehicleSpeed) / std::abs(vehicleSpeed);
+
+    return slipRatio;
+}
+
 Eigen::Vector2d Wheel::calculateFriction(Eigen::Vector2d wheelVelocityLocal, double time_interval) {
     Eigen::Vector2d wheelForward{sin(wheelAngle), cos(wheelAngle)};
     Eigen::Vector2d wheelRight{cos(wheelAngle), -sin(wheelAngle)};

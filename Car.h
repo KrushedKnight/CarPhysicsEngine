@@ -18,6 +18,7 @@ class Car : public RigidBody {
         double braking_power{Constants::BRAKING_POWER};
 
         bool showDebugVectors{true};
+        double previous_slip{0};
 
         Wheel* frontLeft;
         Wheel* frontRight;
