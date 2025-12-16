@@ -105,16 +105,29 @@ void Car::applyEngineTorque() {
 
 void Car::applyBrakes() {
     for (Wheel* wheel : wheels) {
+        Eigen::Vector2d wheelVelocityLocal = calculateWheelVelocityLocal(wheel->position);
+        Eigen::Vector2d wheelForward{sin(wheel->wheelAngle), cos(wheel->wheelAngle)};
+        double vehicleSpeed = std::abs(wheelVelocityLocal.dot(wheelForward));
+
         if (std::abs(wheel->angular_velocity) < 1e-3) {
             wheel->angular_velocity = 0.0;
             wheel->absInterference = 0.0;
+        } else if (vehicleSpeed < 0.1) {
+            double baseBrakeTorque = -std::abs(braking_power * wheel->wheelRadius) * std::copysign(1.0, wheel->angular_velocity);
+            wheel->addTorque(baseBrakeTorque);
+            wheel->absInterference = 0.0;
         } else {
-            Eigen::Vector2d wheelVelocityLocal = calculateWheelVelocityLocal(wheel->position);
             double slipRatio = wheel->calculateSlipRatio(wheelVelocityLocal);
             double error = Constants::ABS_SLIP_SETPOINT - slipRatio;
             double changeInSlip = slipRatio - wheel->previousAbsSlipError;
             double baseBrakeTorque = -std::abs(braking_power * wheel->wheelRadius) * std::copysign(1.0, wheel->angular_velocity);
             double adjustedBrakeTorque = baseBrakeTorque + Constants::ABS_kP * error - Constants::ABS_kD * changeInSlip;
+
+            if (wheel->angular_velocity > 0 && adjustedBrakeTorque > 0) {
+                adjustedBrakeTorque = 0.0;
+            } else if (wheel->angular_velocity < 0 && adjustedBrakeTorque < 0) {
+                adjustedBrakeTorque = 0.0;
+            }
 
             double reduction = std::abs(baseBrakeTorque) - std::abs(adjustedBrakeTorque);
             if (reduction > 0) {
