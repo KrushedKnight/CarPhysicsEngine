@@ -1,11 +1,12 @@
 #include <SDL2/SDL.h>
 #include <iostream>
 
-#include "Car.h"
-#include "GUI.h"
+#include "vehicle/Car.h"
+#include "ui/GUI.h"
 #include <Eigen/Dense>
 
-#include "constants.h"
+#include "config/PhysicsConstants.h"
+#include "config/RenderingConstants.h"
 
 int main(int argc, char* argv[]) {
     if (SDL_Init(SDL_INIT_VIDEO) != 0) {
@@ -27,11 +28,11 @@ int main(int argc, char* argv[]) {
     int screenWidth = displayMode.w;
     int screenHeight = displayMode.h;
 
-    Constants::initializeScreenDependentConstants(screenWidth, screenHeight);
+    RenderingConstants::initializeScreenDependentConstants(screenWidth, screenHeight);
 
     SDL_Window* win = SDL_CreateWindow("Car Game",
         SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,
-        Constants::SDL_WINDOW_WIDTH, Constants::SDL_WINDOW_LENGTH,
+        RenderingConstants::SDL_WINDOW_WIDTH, RenderingConstants::SDL_WINDOW_LENGTH,
         SDL_WINDOW_FULLSCREEN_DESKTOP);
     if (!win) {
         std::cerr << "SDL_CreateWindow Error: " << SDL_GetError() << std::endl;
@@ -52,7 +53,7 @@ int main(int argc, char* argv[]) {
 
     SDL_Event event;
 
-    Car car{Constants::CENTER_X, Constants::CENTER_Y, Constants::CAR_WIDTH, Constants::CAR_LENGTH};
+    Car car{RenderingConstants::CENTER_X, RenderingConstants::CENTER_Y, RenderingConstants::CAR_WIDTH, RenderingConstants::CAR_LENGTH};
 
     GUI gui;
     int fontSize = std::max(12, screenHeight / 60);
@@ -60,7 +61,7 @@ int main(int argc, char* argv[]) {
         std::cerr << "Warning: Failed to initialize GUI" << std::endl;
     }
 
-    const double STEERING_INCREMENT = 2.0 * Constants::DEG_TO_RAD;
+    const double STEERING_INCREMENT = 2.0 * PhysicsConstants::DEG_TO_RAD;
 
     bool running = true;
     while (running) {
@@ -112,10 +113,10 @@ int main(int argc, char* argv[]) {
         gui.drawHUD(renderer, car);
         SDL_RenderPresent(renderer);
 
-        car.incrementTime(Constants::TIME_INTERVAL);
+        car.incrementTime(PhysicsConstants::TIME_INTERVAL);
         car.moveWheels();
 
-        SDL_Delay(Constants::SDL_TIME_INTERVAL);
+        SDL_Delay(PhysicsConstants::SDL_TIME_INTERVAL);
     }
 
     SDL_DestroyWindow(win);

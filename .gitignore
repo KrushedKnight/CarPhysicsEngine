@@ -1,4 +1,19 @@
-/eigen-3.4.0
-/cmake-build-debug
-.claude
+# Build directories
+build/
+cmake-build-debug/
+
+# External dependencies
+eigen-3.4.0/
+
+# IDE and tools
+.claude/
+.idea/
+
+# Old root-level source files (moved to src/ and include/)
+/*.cpp
+/*.h
+!main.cpp
+!CMakeLists.txt
+
+# Documentation
 CLAUDE.md
