@@ -23,6 +23,8 @@ public:
 
     double previousSlipError{0.0};
     double tcsInterference{0.0};
+    double previousAbsSlipError{0.0};
+    double absInterference{0.0};
 
     Wheel();
 

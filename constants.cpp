@@ -36,6 +36,9 @@ const double TIRE_LOW_SPEED_THRESHOLD = 0.5;
 const double TIRE_SLIP_SETPOINT = 0.1;
 const double TIRE_TCS_kP = 2.0;
 const double TIRE_TCS_kD = 0.5;
+const double ABS_SLIP_SETPOINT = 0.2;
+const double ABS_kP = 2.0;
+const double ABS_kD = 0.5;
 
 const double CAR_POWER = 4000.0;
 const double BRAKING_POWER = 4000.0;

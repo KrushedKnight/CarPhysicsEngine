@@ -32,6 +32,9 @@ namespace Constants {
     extern const double TIRE_SLIP_SETPOINT;
     extern const double TIRE_TCS_kP;
     extern const double TIRE_TCS_kD;
+    extern const double ABS_SLIP_SETPOINT;
+    extern const double ABS_kP;
+    extern const double ABS_kD;
 
     extern const double CAR_POWER;
     extern const double BRAKING_POWER;
