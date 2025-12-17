@@ -281,6 +281,34 @@ void GUI::drawHUD(SDL_Renderer* renderer, const Car& car) {
         SDL_RenderFillRect(renderer, &barFill);
     }
 
+    int gearPanelY = absBarY + barHeight + padding * 2;
+    int gearPanelHeight = lineHeight * 2 + padding * 2;
+
+    SDL_Rect gearPanel = {panel.x, gearPanelY, panelWidth, gearPanelHeight};
+    SDL_SetRenderDrawColor(renderer, 0, 0, 0, 180);
+    SDL_RenderFillRect(renderer, &gearPanel);
+
+    SDL_SetRenderDrawColor(renderer, 100, 100, 100, 255);
+    SDL_RenderDrawRect(renderer, &gearPanel);
+
+    int gearTextY = gearPanelY + padding;
+
+    int currentGear = car.getCurrentGear();
+    std::string gearText;
+    if (currentGear == -2) {
+        gearText = "Gear: R";
+    } else if (currentGear == -1) {
+        gearText = "Gear: N";
+    } else {
+        gearText = "Gear: " + std::to_string(currentGear + 1);
+    }
+    drawText(renderer, gearText, textX, gearTextY, {255, 255, 255, 255});
+
+    std::string clutchText = "Clutch: ";
+    clutchText += car.isClutchHeld() ? "HELD" : "Released";
+    SDL_Color clutchColor = car.isClutchHeld() ? SDL_Color{255, 255, 0, 255} : SDL_Color{200, 200, 200, 255};
+    drawText(renderer, clutchText, textX, gearTextY + lineHeight, clutchColor);
+
     drawGraphs(renderer);
 }
 

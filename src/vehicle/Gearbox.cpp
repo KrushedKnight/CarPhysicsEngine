@@ -12,7 +12,7 @@ Gearbox::Gearbox(const std::vector<double>& ratios, double finalDriveRatio)
 
 bool Gearbox::isClutchHeld() const
 {
-    return true;
+    return clutchEngaged;
 }
 
 void Gearbox::holdClutch()
@@ -35,7 +35,7 @@ int Gearbox::getCurrentGear() const
 {
     return selectedGear;
 }
-double Gearbox::getGearRatio()
+double Gearbox::getGearRatio() const
 {
     double gearRatio;
     if (this->selectedGear == -1)

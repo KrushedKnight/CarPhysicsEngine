@@ -311,3 +311,11 @@ void Car::holdClutch() {
 void Car::releaseClutch() {
     gearbox.releaseClutch();
 }
+
+int Car::getCurrentGear() const {
+    return gearbox.getCurrentGear();
+}
+
+bool Car::isClutchHeld() const {
+    return gearbox.isClutchHeld();
+}
