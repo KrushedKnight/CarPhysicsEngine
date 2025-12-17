@@ -31,12 +31,15 @@ double Engine::getPowerGenerated(double throttle)
     return powerGenerated;
 }
 
-double Engine::updateRPM(double throttle, double netTorque)
+void Engine::updateRPM(double throttle, double netTorque)
 {
     rpm = rpm + (netTorque / EngineConstants::ENGINE_MOMENT_OF_INERTIA) * (30 / M_PI) * PhysicsConstants::TIME_INTERVAL;
 }
 
-
+double Engine::getRPM()
+{
+    return rpm;
+}
 
 double Engine::calculateTorque(double throttle)
 {
