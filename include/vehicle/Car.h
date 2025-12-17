@@ -6,6 +6,8 @@
 
 #include "core/RigidBody.h"
 #include "vehicle/Wheel.h"
+#include "vehicle/Engine.h"
+#include "vehicle/Gearbox.h"
 #include "control/TractionControl.h"
 #include "control/AntiLockBrakes.h"
 
@@ -42,6 +44,11 @@ class Car : public RigidBody {
         void applyBrakes();
         void applyForceFeedback();
 
+        void shiftUp();
+        void shiftDown();
+        void holdClutch();
+        void releaseClutch();
+
         void sumWheelForces();
         void moveWheels();
         void updateLoadTransfer();
@@ -51,6 +58,8 @@ class Car : public RigidBody {
         const double height;
         SDL_Texture* carTexture{nullptr};
 
+        Engine engine;
+        Gearbox gearbox;
         TractionControl tcs;
         AntiLockBrakes abs;
 

@@ -6,6 +6,7 @@
 
 Car::Car(double x, double y, int w, int h)
     : width(w), height(h),
+      gearbox({3.5, 2.5, 1.8, 1.3, 1.0, 0.8}, 3.7),
       tcs(PhysicsConstants::TIRE_TCS_kP, PhysicsConstants::TIRE_TCS_kD),
       abs(PhysicsConstants::ABS_kP, PhysicsConstants::ABS_kD) {
     pos_x = x;
@@ -293,4 +294,20 @@ void Car::eraseCar(SDL_Renderer* renderer) {
 
 double Car::getAngleToWheel(Wheel* wheel) {
     return steering_angle * PhysicsConstants::STEERING_RACK;
+}
+
+void Car::shiftUp() {
+    gearbox.shiftUp();
+}
+
+void Car::shiftDown() {
+    gearbox.shiftDown();
+}
+
+void Car::holdClutch() {
+    gearbox.holdClutch();
+}
+
+void Car::releaseClutch() {
+    gearbox.releaseClutch();
 }

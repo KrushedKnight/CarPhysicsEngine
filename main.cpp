@@ -77,6 +77,10 @@ int main(int argc, char* argv[]) {
                     gui.toggleHUD();
                 } else if (event.key.keysym.sym == SDLK_g) {
                     gui.toggleGraphs();
+                } else if (event.key.keysym.sym == SDLK_e) {
+                    car.shiftUp();
+                } else if (event.key.keysym.sym == SDLK_c) {
+                    car.shiftDown();
                 }
             }
         }
@@ -102,6 +106,12 @@ int main(int argc, char* argv[]) {
         if (keystate[SDL_SCANCODE_D]) {
             car.applySteering(-STEERING_INCREMENT);
             steering = -1.0;
+        }
+
+        if (keystate[SDL_SCANCODE_LSHIFT]) {
+            car.holdClutch();
+        } else {
+            car.releaseClutch();
         }
 
         car.sumWheelForces();

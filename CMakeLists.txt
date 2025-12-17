@@ -31,7 +31,11 @@ add_executable(SimpleTrafficGame main.cpp
         include/control/AntiLockBrakes.h
         include/ui/GUI.h
         include/ui/Graph.h
-        include/config/constants.h)
+        include/config/constants.h
+        include/vehicle/Engine.h
+        src/vehicle/Engine.cpp
+        include/vehicle/Gearbox.h
+        src/vehicle/Gearbox.cpp)
 target_link_libraries(SimpleTrafficGame ${SDL2_LIBRARIES} ${SDL2_TTF_LIBRARIES})
 
 # Add tests subdirectory
