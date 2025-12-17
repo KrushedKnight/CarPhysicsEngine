@@ -92,7 +92,7 @@ int main(int argc, char* argv[]) {
         double steering = 0.0;
 
         if (keystate[SDL_SCANCODE_W]) {
-            car.applyEngineTorque();
+            car.applyEngineTorque(0.6);
             throttle = 1.0;
         }
         if (keystate[SDL_SCANCODE_S]) {

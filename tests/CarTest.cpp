@@ -129,7 +129,7 @@ TEST_F(CarTest, ApplyForceFeedbackUpdatesWheelAngles) {
 }
 
 TEST_F(CarTest, ApplyEngineTorqueIncreasesWheelTorque) {
-    car->applyEngineTorque();
+    car->applyEngineTorque(TODO);
 
     // RWD: Only rear wheels receive engine torque
     EXPECT_EQ(car->frontLeft->angular_torque, 0.0);
@@ -142,16 +142,16 @@ TEST_F(CarTest, ApplyEngineTorqueRespectsTopSpeed) {
     car->frontLeft->angular_velocity = PhysicsConstants::CAR_TOP_SPEED / car->frontLeft->wheelRadius + 10.0;
 
     double initialTorque = car->frontLeft->angular_torque;
-    car->applyEngineTorque();
+    car->applyEngineTorque(TODO);
 
     EXPECT_DOUBLE_EQ(car->frontLeft->angular_torque, initialTorque);
 }
 
 TEST_F(CarTest, ApplyEngineTorqueMultipleTimesAccumulatesTorque) {
-    car->applyEngineTorque();
+    car->applyEngineTorque(TODO);
     double torque1 = car->frontLeft->angular_torque;
 
-    car->applyEngineTorque();
+    car->applyEngineTorque(TODO);
     double torque2 = car->frontLeft->angular_torque;
 
     EXPECT_DOUBLE_EQ(torque2, 2.0 * torque1);
@@ -277,7 +277,7 @@ TEST_F(CarTest, IntegrationSteeringAndMovement) {
 
     // With RWD and softer friction, need multiple iterations for car to move
     for (int i = 0; i < 30; i++) {
-        car->applyEngineTorque();
+        car->applyEngineTorque(TODO);
         car->moveWheels();
         car->sumWheelForces();
         car->incrementTime(PhysicsConstants::TIME_INTERVAL);

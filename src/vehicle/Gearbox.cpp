@@ -25,10 +25,14 @@ void Gearbox::releaseClutch()
     clutchEngaged = false;
 }
 
-double Gearbox::getFinalTorque(Engine* engine)
+double Gearbox::engineToWheelRatio()
 {
-    double gearRatio = this->getGearRatio();
-    return engine->calculateTorque() * (gearRatio * this->finalDrive);
+    return (this->getGearRatio() * this->finalDrive);
+}
+
+double Gearbox::wheelToEngineRatio()
+{
+    return 1.0 / engineToWheelRatio();
 }
 
 int Gearbox::getCurrentGear() const

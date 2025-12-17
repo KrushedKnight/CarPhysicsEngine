@@ -81,27 +81,33 @@ void Car::applyForceFeedback()
     frontRight->wheelAngle = steering_angle * PhysicsConstants::STEERING_RACK;
 }
 
-void Car::applyEngineTorque() {
+void Car::applyEngineTorque(double throttle) {
     Wheel* rearWheels[] = {backLeft, backRight};
 
+    double wheelLoadTorque = 0;
+
     for (Wheel* wheel : rearWheels) {
-        if (wheel->angular_velocity * wheel->wheelRadius < PhysicsConstants::CAR_TOP_SPEED) {
-            Eigen::Vector2d wheelVelocityLocal = calculateWheelVelocityLocal(wheel->position);
-            double baseTorque = gearbox.getFinalTorque(&engine);
-
-            double adjustedTorque = tcs.regulateTorque(
-                *wheel,
-                baseTorque,
-                PhysicsConstants::TIRE_SLIP_SETPOINT,
-                wheelVelocityLocal,
-                PhysicsConstants::TIME_INTERVAL
-            );
-
-            wheel->addTorque(adjustedTorque);
-        } else {
+        if (wheel->angular_velocity * wheel->wheelRadius >= PhysicsConstants::CAR_TOP_SPEED)
+        {
             wheel->tcsInterference = 0.0;
         }
+
+        Eigen::Vector2d wheelVelocityLocal = calculateWheelVelocityLocal(wheel->position);
+        double baseTorque = engine.calculateTorque(throttle) / gearbox.engineToWheelRatio();
+
+        double adjustedTorque = tcs.regulateTorque(
+            *wheel,
+            baseTorque,
+            PhysicsConstants::TIRE_SLIP_SETPOINT,
+            wheelVelocityLocal,
+            PhysicsConstants::TIME_INTERVAL
+        );
+        wheelLoadTorque += wheel->angular_torque; //make sure this sign is correct
+        wheel->addTorque(adjustedTorque);
     }
+    double engineLoadTorque = wheelLoadTorque / gearbox.engineToWheelRatio();
+    engine.addLoadTorque(engineLoadTorque);
+    engine.updateRPM(throttle);
 }
 
 void Car::applyBrakes() {

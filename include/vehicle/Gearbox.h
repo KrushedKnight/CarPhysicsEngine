@@ -15,7 +15,8 @@ private:
 public:
     Gearbox(const std::vector<double>& ratios, double finalDriveRatio);
 
-    double getFinalTorque(Engine* engine);
+    double engineToWheelRatio();
+    double wheelToEngineRatio();
 
     bool isClutchHeld() const;
     void holdClutch();

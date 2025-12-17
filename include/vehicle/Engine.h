@@ -8,7 +8,9 @@
 class Engine
 {
 private:
-    double rpm;
+    double rpm{0};
+    double loadTorque{0};
+    double engineTorque{0};
     double getVolumetricEfficiency();
     double getAirFlowRate(double throttle);
     double getAirFuelRatio();
@@ -16,7 +18,8 @@ private:
 
 
 public:
-    void updateRPM(double throttle, double loadTorque);
+    void updateRPM(double throttle);
     double getRPM();
     double calculateTorque(double throttle);
+    double addLoadTorque(double torque);
 };

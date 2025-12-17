@@ -5,7 +5,10 @@
 #include "config/PhysicsConstants.h"
 #include "config/RenderingConstants.h"
 
-
+double Engine::addLoadTorque(double torque)
+{
+    loadTorque += torque;
+}
 double Engine::getVolumetricEfficiency()
 {
     return 0.8; //placeholder- should be a function of rpm
@@ -31,8 +34,10 @@ double Engine::getPowerGenerated(double throttle)
     return powerGenerated;
 }
 
-void Engine::updateRPM(double throttle, double netTorque)
+void Engine::updateRPM(double throttle)
 {
+    double netTorque = engineTorque - loadTorque;
+    loadTorque = 0;
     rpm = rpm + (netTorque / EngineConstants::ENGINE_MOMENT_OF_INERTIA) * (30 / M_PI) * PhysicsConstants::TIME_INTERVAL;
 }
 
@@ -44,8 +49,8 @@ double Engine::getRPM()
 double Engine::calculateTorque(double throttle)
 {
     double angularSpeed = (2.0 * M_PI * rpm) / 60.0;
-    double driveshaftTorque = getPowerGenerated(throttle) / angularSpeed;
-    return driveshaftTorque;
+    engineTorque = getPowerGenerated(throttle) / angularSpeed;
+    return engineTorque;
 }
 
 
