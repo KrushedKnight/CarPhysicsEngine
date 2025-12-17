@@ -87,7 +87,7 @@ void Car::applyEngineTorque() {
     for (Wheel* wheel : rearWheels) {
         if (wheel->angular_velocity * wheel->wheelRadius < PhysicsConstants::CAR_TOP_SPEED) {
             Eigen::Vector2d wheelVelocityLocal = calculateWheelVelocityLocal(wheel->position);
-            double baseTorque = PhysicsConstants::CAR_POWER * wheel->wheelRadius;
+            double baseTorque = gearbox.getFinalTorque(&engine);
 
             double adjustedTorque = tcs.regulateTorque(
                 *wheel,
