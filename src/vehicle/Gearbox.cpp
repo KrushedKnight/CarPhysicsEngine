@@ -66,7 +66,7 @@ bool Gearbox::shiftDown()
 
 bool Gearbox::shiftUp()
 {
-    if (selectedGear < this->gearRatios.size() - 1)
+    if (selectedGear < static_cast<int>(this->gearRatios.size()) - 1)
     {
         selectedGear++;
         return true;
