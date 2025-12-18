@@ -268,13 +268,13 @@ void GUI::drawHUD(SDL_Renderer* renderer, const Car& car, double throttle) {
     SDL_RenderDrawRect(renderer, &barBackground);
 
     if (maxTcsInterference > 0.0) {
-        int fillWidth = static_cast<int>(std::min(1.0, maxTcsInterference / 30.0) * actualBarWidth);
+        int fillWidth = static_cast<int>(std::min(1.0, maxTcsInterference / 120.0) * actualBarWidth);
         SDL_Rect barFill = {actualBarX, barY, fillWidth, barHeight};
 
         SDL_Color barColor;
-        if (maxTcsInterference < 10) {
+        if (maxTcsInterference < 40) {
             barColor = {0, 255, 0, 255};
-        } else if (maxTcsInterference < 20) {
+        } else if (maxTcsInterference < 80) {
             barColor = {255, 255, 0, 255};
         } else {
             barColor = {255, 0, 0, 255};

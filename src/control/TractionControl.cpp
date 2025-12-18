@@ -8,6 +8,13 @@ double TractionControl::regulateTorque(Wheel& wheel, double requestedTorque,
                                        double slipSetpoint,
                                        const Eigen::Vector2d& wheelVelocityLocal,
                                        double dt) {
+    if (requestedTorque <= 0.0) {
+        interferencePercent = 0.0;
+        wheel.tcsInterference = 0.0;
+        wheel.previousSlipError = wheel.calculateSlipRatio(wheelVelocityLocal);
+        return 0.0;
+    }
+
     double slipRatio = wheel.calculateSlipRatio(wheelVelocityLocal);
     double error = slipSetpoint - slipRatio;
     double changeInSlip = slipRatio - wheel.previousSlipError;
