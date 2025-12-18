@@ -93,6 +93,9 @@ void Car::updateEngine(double throttle) {
         {
             wheel->tcsInterference = 0.0;
         }
+        double engineLoadTorque = gearbox.convertWheelTorqueToEngine(wheelLoadTorque);
+
+        engine.updateRPM(throttle);
 
         Eigen::Vector2d wheelVelocityLocal = calculateWheelVelocityLocal(wheel->position);
         double baseTorque = gearbox.convertEngineTorqueToWheel(engine.getEngineTorque());
@@ -107,9 +110,6 @@ void Car::updateEngine(double throttle) {
         wheelLoadTorque += wheel->angular_torque;
         wheel->addTorque(adjustedTorque);
     }
-    double engineLoadTorque = gearbox.convertWheelTorqueToEngine(wheelLoadTorque);
-    engine.addLoadTorque(engineLoadTorque);
-    engine.updateRPM(throttle);
 }
 
 void Car::applyBrakes() {

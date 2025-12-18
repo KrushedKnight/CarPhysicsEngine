@@ -91,7 +91,7 @@ double Gearbox::calculateBite()
 
     return bite;
 }
-double Gearbox::convertEngineTorqueToWheel(double engineTorque)
+double Gearbox::convertEngineTorqueToWheel(double engineTorque, Engine* engine, double wheelOmega)
 {
     if (selectedGear == -1 || clutchPressed)
     {
@@ -101,7 +101,15 @@ double Gearbox::convertEngineTorqueToWheel(double engineTorque)
     double bite = calculateBite();
     double torqueMax = bite * PhysicsConstants::CLUTCH_MAX_TORQUE;
 
-    return engineTorque / engineToWheelRatio();
+
+    double engineOmega = (2.0 * M_PI * engine->getRPM()) / 60.0;
+    double transOmega = (wheelOmega * wheelToEngineRatio()); //double check this is the right one
+
+    double slip = engineOmega - transOmega;
+    double torqueClutch = std::clamp(slip * PhysicsConstants::CLUTCH_SLIP_K, -torqueMax, torqueMax);
+
+    engine->addLoadTorque(engineTorque - torqueClutch);
+    return torqueClutch / engineToWheelRatio();
 }
 
 double Gearbox::convertWheelTorqueToEngine(double wheelTorque)

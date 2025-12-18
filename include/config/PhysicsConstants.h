@@ -3,6 +3,8 @@
 
 #include <cmath>
 
+#include "vehicle/Gearbox.h"
+
 namespace PhysicsConstants {
     constexpr double DEG_TO_RAD = M_PI / 180.0;
     constexpr double RAD_TO_DEG = 180.0 / M_PI;
@@ -40,7 +42,9 @@ namespace PhysicsConstants {
     constexpr double FORCE_FEEDBACK_DECAY = 0.97;
 
     constexpr double CG_HEIGHT = 0.5;
-    constexpr double CLUTCH_MAX_TORQUE = 1;
+    constexpr double CLUTCH_MAX_TORQUE = 1; //placeholders
+    constexpr double CLUTCH_SLIP_K = 1;
+    constexpr double TRANS_INERTIA = 1;
 }
 
 #endif
