@@ -24,7 +24,7 @@ public:
     double engineToWheelRatio();
     double wheelToEngineRatio();
 
-    double convertEngineTorqueToWheel(double engineTorque);
+    double convertEngineTorqueToWheel(double engineTorque, Engine* engine, double wheelOmega);
     double convertWheelTorqueToEngine(double wheelTorque);
 
     bool isClutchHeld() const;
@@ -37,7 +37,10 @@ public:
     int getCurrentGear() const;
     double getGearRatio() const;
 
+    double calculateBite();
     void update();
+
+    double getEngineTorque();
 };
 
 #endif

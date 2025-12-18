@@ -86,20 +86,16 @@ void Car::updateEngine(double throttle) {
 
     Wheel* rearWheels[] = {backLeft, backRight};
 
-    double wheelLoadTorque = 0;
+    engine.updateRPM(throttle);
+    double baseTorque = gearbox.convertEngineTorqueToWheel(engine.getEngineTorque(), &engine, std::max(backLeft->angular_velocity, backRight->angular_velocity));
+    engine.addLoadTorque(gearbox.getEngineTorque());
 
     for (Wheel* wheel : rearWheels) {
         if (wheel->angular_velocity * wheel->wheelRadius >= PhysicsConstants::CAR_TOP_SPEED)
         {
             wheel->tcsInterference = 0.0;
         }
-        double engineLoadTorque = gearbox.convertWheelTorqueToEngine(wheelLoadTorque);
-
-        engine.updateRPM(throttle);
-
         Eigen::Vector2d wheelVelocityLocal = calculateWheelVelocityLocal(wheel->position);
-        double baseTorque = gearbox.convertEngineTorqueToWheel(engine.getEngineTorque());
-
         double adjustedTorque = tcs.regulateTorque(
             *wheel,
             baseTorque,
@@ -107,9 +103,9 @@ void Car::updateEngine(double throttle) {
             wheelVelocityLocal,
             PhysicsConstants::TIME_INTERVAL
         );
-        wheelLoadTorque += wheel->angular_torque;
         wheel->addTorque(adjustedTorque);
     }
+
 }
 
 void Car::applyBrakes() {
