@@ -53,11 +53,11 @@ double Gearbox::getGearRatio() const
     }
     else if(this->selectedGear == -2)
     {
-        gearRatio = -1.0 / this->gearRatios[0];
+        gearRatio = -1.0 / (this->gearRatios[0] * finalDrive);
     }
     else
     {
-        gearRatio = 1.0 / this->gearRatios[this->selectedGear];
+        gearRatio = 1.0 / (this->gearRatios[this->selectedGear] * finalDrive);
     }
 
     return gearRatio;
@@ -108,7 +108,7 @@ double Gearbox::convertEngineTorqueToWheel(double engineTorque, Engine* engine, 
 
 
     double engineOmega = (2.0 * M_PI * engine->getRPM()) / 60.0;
-    double transOmega = (wheelOmega * wheelToEngineRatio()); //double check this is the right one
+    double transOmega = wheelOmega / wheelToEngineRatio();
 
     double slip = engineOmega - transOmega;
     double torqueClutch = std::clamp(slip * PhysicsConstants::CLUTCH_SLIP_K, -torqueMax, torqueMax);
@@ -116,7 +116,7 @@ double Gearbox::convertEngineTorqueToWheel(double engineTorque, Engine* engine, 
     this->engineTorque = engineTorque - torqueClutch;
     this->clutchTorque = torqueClutch;
 
-    return torqueClutch / engineToWheelRatio();
+    return torqueClutch * engineToWheelRatio();
 }
 
 double Gearbox::convertWheelTorqueToEngine(double wheelTorque)
@@ -125,7 +125,7 @@ double Gearbox::convertWheelTorqueToEngine(double wheelTorque)
     {
         return 0.0;
     }
-    loadTorque = wheelTorque / engineToWheelRatio();
+    loadTorque = wheelTorque * wheelToEngineRatio();
     return loadTorque;
 }
 
