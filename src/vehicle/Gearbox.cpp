@@ -12,6 +12,7 @@ Gearbox::Gearbox(const std::vector<double>& ratios, double finalDriveRatio)
     this->clutchEngagement = 1.0;
     this->loadTorque = 0.0;
     this->engineTorque = 0.0;
+    this->clutchTorque = 0.0;
 }
 
 bool Gearbox::isClutchHeld() const
@@ -98,6 +99,7 @@ double Gearbox::convertEngineTorqueToWheel(double engineTorque, Engine* engine, 
 {
     if (selectedGear == -1 || clutchPressed)
     {
+        this->clutchTorque = 0.0;
         return 0.0;
     }
 
@@ -112,6 +114,7 @@ double Gearbox::convertEngineTorqueToWheel(double engineTorque, Engine* engine, 
     double torqueClutch = std::clamp(slip * PhysicsConstants::CLUTCH_SLIP_K, -torqueMax, torqueMax);
 
     this->engineTorque = engineTorque - torqueClutch;
+    this->clutchTorque = torqueClutch;
 
     return torqueClutch / engineToWheelRatio();
 }
@@ -137,5 +140,15 @@ void Gearbox::update()
     double target = clutchPressed ? 0.0 : 1.0;
     double rate = target > clutchEngagement ? 12.0 : 6.0;
     clutchEngagement += (target - clutchEngagement) * rate * PhysicsConstants::TIME_INTERVAL;
+}
+
+double Gearbox::getClutchEngagement() const
+{
+    return clutchEngagement;
+}
+
+double Gearbox::getClutchTorque() const
+{
+    return clutchTorque;
 }
 

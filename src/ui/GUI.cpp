@@ -81,6 +81,7 @@ std::vector<std::string> GUI::formatCarStats(const Car& car, double throttle) {
     std::ostringstream oss;
 
     const Engine& engine = car.getEngine();
+    const Gearbox& gearbox = car.getGearbox();
 
     stats.push_back("--- Engine ---");
     oss << std::fixed << std::setprecision(0);
@@ -94,6 +95,16 @@ std::vector<std::string> GUI::formatCarStats(const Car& car, double throttle) {
     oss.str("");
 
     oss << "Torque: " << engine.getEngineTorque() << " N·m";
+    stats.push_back(oss.str());
+    oss.str("");
+
+    oss << std::setprecision(2);
+    oss << "Clutch Eng: " << (gearbox.getClutchEngagement() * 100) << "%";
+    stats.push_back(oss.str());
+    oss.str("");
+
+    oss << std::setprecision(1);
+    oss << "Clutch Torque: " << gearbox.getClutchTorque() << " N·m";
     stats.push_back(oss.str());
     oss.str("");
 

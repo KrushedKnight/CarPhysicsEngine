@@ -14,9 +14,7 @@ private:
     double clutchEngagement;
     double loadTorque;
     double engineTorque;
-
-
-//for tomorrow, this is all getting super super confusing needs updates to the system. basically loadTorque and engineTorque should be stored in gearbox class and gearbox should act on engine and load.
+    double clutchTorque;
 
 public:
     Gearbox(const std::vector<double>& ratios, double finalDriveRatio);
@@ -41,6 +39,8 @@ public:
     void update();
 
     double getEngineTorque();
+    double getClutchEngagement() const;
+    double getClutchTorque() const;
 };
 
 #endif

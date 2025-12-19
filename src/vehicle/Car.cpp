@@ -88,7 +88,7 @@ void Car::updateEngine(double throttle) {
     Wheel* rearWheels[] = {backLeft, backRight};
 
     double baseTorque = gearbox.convertEngineTorqueToWheel(engine.getEngineTorque(), &engine, std::max(backLeft->angular_velocity, backRight->angular_velocity));
-    engine.addLoadTorque(gearbox.getEngineTorque());
+    engine.addLoadTorque(gearbox.getClutchTorque());
     engine.updateRPM(throttle);
 
     for (Wheel* wheel : rearWheels) {
@@ -327,4 +327,8 @@ bool Car::isClutchHeld() const {
 
 const Engine& Car::getEngine() const {
     return engine;
+}
+
+const Gearbox& Car::getGearbox() const {
+    return gearbox;
 }

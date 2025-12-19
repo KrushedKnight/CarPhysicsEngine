@@ -53,6 +53,7 @@ class Car : public RigidBody {
         bool isClutchHeld() const;
 
         const Engine& getEngine() const;
+        const Gearbox& getGearbox() const;
 
         void sumWheelForces();
         void moveWheels();
