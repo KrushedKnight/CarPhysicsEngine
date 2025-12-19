@@ -108,7 +108,7 @@ double Gearbox::convertEngineTorqueToWheel(double engineTorque, Engine* engine, 
 
 
     double engineOmega = (2.0 * M_PI * engine->getRPM()) / 60.0;
-    double transOmega = wheelOmega / wheelToEngineRatio();
+    double transOmega = wheelOmega * wheelToEngineRatio();
 
     double slip = engineOmega - transOmega;
     double torqueClutch = std::clamp(slip * PhysicsConstants::CLUTCH_SLIP_K, -torqueMax, torqueMax);
@@ -116,7 +116,7 @@ double Gearbox::convertEngineTorqueToWheel(double engineTorque, Engine* engine, 
     this->engineTorque = engineTorque - torqueClutch;
     this->clutchTorque = torqueClutch;
 
-    return torqueClutch * engineToWheelRatio();
+    return torqueClutch * wheelToEngineRatio();
 }
 
 double Gearbox::convertWheelTorqueToEngine(double wheelTorque)
