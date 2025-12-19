@@ -9,6 +9,9 @@ Gearbox::Gearbox(const std::vector<double>& ratios, double finalDriveRatio)
     this->finalDrive = finalDriveRatio;
     this->clutchPressed = false;
     this->selectedGear = -1;
+    this->clutchEngagement = 1.0;
+    this->loadTorque = 0.0;
+    this->engineTorque = 0.0;
 }
 
 bool Gearbox::isClutchHeld() const

@@ -82,13 +82,14 @@ void Car::applyForceFeedback()
 }
 
 void Car::updateEngine(double throttle) {
+    gearbox.update();
     engine.calculateTorque(throttle);
 
     Wheel* rearWheels[] = {backLeft, backRight};
 
-    engine.updateRPM(throttle);
     double baseTorque = gearbox.convertEngineTorqueToWheel(engine.getEngineTorque(), &engine, std::max(backLeft->angular_velocity, backRight->angular_velocity));
     engine.addLoadTorque(gearbox.getEngineTorque());
+    engine.updateRPM(throttle);
 
     for (Wheel* wheel : rearWheels) {
         if (wheel->angular_velocity * wheel->wheelRadius >= PhysicsConstants::CAR_TOP_SPEED)
