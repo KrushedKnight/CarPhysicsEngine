@@ -31,7 +31,7 @@ namespace PhysicsConstants {
     constexpr double ABS_kD = 0.5;
 
     constexpr double CAR_POWER = 4000.0;
-    constexpr double BRAKING_POWER = 4000.0;
+    constexpr double BRAKING_POWER = 8000.0;
 
     constexpr double CAR_MASS = 1200.0;
     constexpr double CAR_WEIGHT = CAR_MASS * 9.81;
