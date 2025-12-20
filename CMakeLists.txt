@@ -23,6 +23,7 @@ add_executable(SimpleTrafficGame main.cpp
         src/control/AntiLockBrakes.cpp
         src/ui/GUI.cpp
         src/ui/Graph.cpp
+        src/ui/FreeBodyDiagram.cpp
         src/config/constants.cpp
         include/core/RigidBody.h
         include/vehicle/Wheel.h
@@ -31,6 +32,7 @@ add_executable(SimpleTrafficGame main.cpp
         include/control/AntiLockBrakes.h
         include/ui/GUI.h
         include/ui/Graph.h
+        include/ui/FreeBodyDiagram.h
         include/config/constants.h
         include/vehicle/Engine.h
         src/vehicle/Engine.cpp

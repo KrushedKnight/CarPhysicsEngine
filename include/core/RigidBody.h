@@ -1,6 +1,8 @@
 #ifndef RIGIDBODY_H
 #define RIGIDBODY_H
 #include <Eigen/Dense>
+#include <map>
+#include <string>
 
 class RigidBody {
 public:
@@ -10,6 +12,7 @@ public:
     Eigen::Vector2d velocity;
     Eigen::Vector2d acceleration;
     Eigen::Vector2d forces;
+    std::map<std::string, Eigen::Vector2d> namedForces;
 
     double angular_position;
     double angular_velocity;
@@ -24,9 +27,11 @@ public:
     int getPositionX();
     int getPositionY();
 
-    void addForce(Eigen::Vector2d force);
+    void addForce(Eigen::Vector2d force, const std::string& name = "");
 
     void addTorque(double torque);
+
+    const std::map<std::string, Eigen::Vector2d>& getNamedForces() const;
 
     void clearForces();
     void clearTorques();

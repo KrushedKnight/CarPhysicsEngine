@@ -144,6 +144,9 @@ void Car::sumWheelForces() {
     Eigen::Vector2d totalForceLocal = Eigen::Vector2d::Zero();
     double totalTorque = 0.0;
 
+    const char* wheelNames[] = {"FL Friction", "FR Friction", "RL Friction", "RR Friction"};
+    int wheelIndex = 0;
+
     for (Wheel* wheel : wheels) {
         Eigen::Vector2d wheelVelocityLocal = calculateWheelVelocityLocal(wheel->position);
 
@@ -164,16 +167,12 @@ void Car::sumWheelForces() {
         wheel->lastVelocity = wheelVelocityWorld;
         wheel->lastForce = wheelForceWorld / wheel->mass;
 
+        addForce(wheelForceWorld, wheelNames[wheelIndex++]);
+
         totalForceLocal += wheelForceLocal;
         totalTorque += torque;
     }
 
-    Eigen::Vector2d totalForceWorld(
-        totalForceLocal.x() * cos_angle + totalForceLocal.y() * sin_angle,
-        -totalForceLocal.x() * sin_angle + totalForceLocal.y() * cos_angle
-    );
-
-    addForce(totalForceWorld);
     addTorque(totalTorque);
 
     static int debugCounter = 0;

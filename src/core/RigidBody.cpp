@@ -22,8 +22,12 @@ int RigidBody::getPositionY() {
     return std::floor(pos_y);
 }
 
-void RigidBody::addForce(Eigen::Vector2d force) {
+void RigidBody::addForce(Eigen::Vector2d force, const std::string& name) {
     forces += force;
+
+    if (!name.empty()) {
+        namedForces[name] += force;
+    }
 }
 
 void RigidBody::addTorque(double torque) {
@@ -32,10 +36,15 @@ void RigidBody::addTorque(double torque) {
 
 void RigidBody::clearForces() {
     forces.setZero();
+    namedForces.clear();
 }
 
 void RigidBody::clearTorques() {
     angular_torque = 0;
+}
+
+const std::map<std::string, Eigen::Vector2d>& RigidBody::getNamedForces() const {
+    return namedForces;
 }
 
 void RigidBody::incrementTime(double time_interval) {
