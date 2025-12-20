@@ -123,7 +123,7 @@ double Gearbox::convertEngineTorqueToWheel(double engineTorque, Engine* engine, 
     this->engineTorque = engineTorque - torqueClutch;
     this->clutchTorque = torqueClutch;
 
-    return torqueClutch * engineToWheelRatio(); //I made this change from wheel to engine ratio and this fixed it
+    return torqueClutch / engineToWheelRatio(); //I made this change from wheel to engine ratio and this fixed it
 }
 
 double Gearbox::convertWheelTorqueToEngine(double wheelTorque)
@@ -132,7 +132,7 @@ double Gearbox::convertWheelTorqueToEngine(double wheelTorque)
     {
         return 0.0;
     }
-    loadTorque = wheelTorque * wheelToEngineRatio();
+    loadTorque = wheelTorque / wheelToEngineRatio();
     return loadTorque;
 }
 
