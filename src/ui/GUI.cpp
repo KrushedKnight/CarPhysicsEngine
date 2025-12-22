@@ -111,17 +111,8 @@ std::vector<std::string> GUI::formatCarStats(const Car& car, double throttle) {
     const Gearbox& gearbox = car.getGearbox();
 
     stats.push_back("--- Engine ---");
-    oss << std::fixed << std::setprecision(0);
-    oss << "RPM: " << engine.getRPM();
-    stats.push_back(oss.str());
-    oss.str("");
-
-    oss << std::setprecision(1);
+    oss << std::fixed << std::setprecision(1);
     oss << "Power: " << (engine.getCurrentPower() / 1000.0) << " kW";
-    stats.push_back(oss.str());
-    oss.str("");
-
-    oss << "Torque: " << engine.getEngineTorque() << " N·m";
     stats.push_back(oss.str());
     oss.str("");
 
@@ -144,21 +135,11 @@ std::vector<std::string> GUI::formatCarStats(const Car& car, double throttle) {
     stats.push_back(oss.str());
     oss.str("");
 
-    oss << std::setprecision(4);
-    oss << "Air Flow: " << engine.getAirFlowRateValue() << " kg/s";
-    stats.push_back(oss.str());
-    oss.str("");
-
     stats.push_back("");
     stats.push_back("--- Vehicle ---");
 
     oss << std::setprecision(1);
     oss << "Position: (" << car.pos_x << ", " << car.pos_y << ")";
-    stats.push_back(oss.str());
-    oss.str("");
-
-    double speed = car.velocity.norm();
-    oss << "Speed: " << speed << " m/s";
     stats.push_back(oss.str());
     oss.str("");
 
@@ -183,11 +164,6 @@ std::vector<std::string> GUI::formatCarStats(const Car& car, double throttle) {
     stats.push_back(oss.str());
     oss.str("");
 
-    double steeringDeg = car.steering_angle * PhysicsConstants::RAD_TO_DEG;
-    oss << "Steering: " << steeringDeg << "°";
-    stats.push_back(oss.str());
-    oss.str("");
-
     oss << std::setprecision(1);
     oss << "Forces: (" << car.forces.x() << ", " << car.forces.y() << ")";
     stats.push_back(oss.str());
@@ -199,22 +175,22 @@ std::vector<std::string> GUI::formatCarStats(const Car& car, double throttle) {
     oss.str("");
 
     stats.push_back("");
-    stats.push_back("--- Tire Grip ---");
+    stats.push_back("--- Tire Load ---");
 
     oss << std::setprecision(0);
-    oss << "FL: " << (car.frontLeft->gripLevel * 100) << "% (" << car.frontLeft->normalForce << "N)";
+    oss << "FL: " << car.frontLeft->normalForce << "N";
     stats.push_back(oss.str());
     oss.str("");
 
-    oss << "FR: " << (car.frontRight->gripLevel * 100) << "% (" << car.frontRight->normalForce << "N)";
+    oss << "FR: " << car.frontRight->normalForce << "N";
     stats.push_back(oss.str());
     oss.str("");
 
-    oss << "RL: " << (car.backLeft->gripLevel * 100) << "% (" << car.backLeft->normalForce << "N)";
+    oss << "RL: " << car.backLeft->normalForce << "N";
     stats.push_back(oss.str());
     oss.str("");
 
-    oss << "RR: " << (car.backRight->gripLevel * 100) << "% (" << car.backRight->normalForce << "N)";
+    oss << "RR: " << car.backRight->normalForce << "N";
     stats.push_back(oss.str());
 
     return stats;
@@ -248,40 +224,8 @@ void GUI::drawHUD(SDL_Renderer* renderer, const Car& car, double throttle) {
     int textX = panel.x + padding;
     int textY = panel.y + padding;
 
-    int tireGripStartLine = -1;
     for (size_t i = 0; i < stats.size(); i++) {
-        if (stats[i] == "--- Tire Grip ---") {
-            tireGripStartLine = static_cast<int>(i);
-            break;
-        }
-    }
-
-    for (size_t i = 0; i < stats.size(); i++) {
-        SDL_Color color = textColor;
-
-        if (tireGripStartLine >= 0 && i > static_cast<size_t>(tireGripStartLine + 1)) {
-            int tireIndex = static_cast<int>(i) - tireGripStartLine - 2;
-            const Wheel* tire = nullptr;
-
-            switch (tireIndex) {
-                case 0: tire = car.frontLeft; break;
-                case 1: tire = car.frontRight; break;
-                case 2: tire = car.backLeft; break;
-                case 3: tire = car.backRight; break;
-            }
-
-            if (tire != nullptr) {
-                if (tire->gripLevel < 0.70) {
-                    color = {0, 255, 0, 255};
-                } else if (tire->gripLevel < 0.90) {
-                    color = {255, 255, 0, 255};
-                } else {
-                    color = {255, 0, 0, 255};
-                }
-            }
-        }
-
-        drawText(renderer, stats[i], textX, textY, color);
+        drawText(renderer, stats[i], textX, textY, textColor);
         textY += lineHeight;
     }
 
@@ -437,8 +381,9 @@ void GUI::drawDials(SDL_Renderer* renderer, const Car& car) {
     int windowWidth, windowHeight;
     SDL_GetRendererOutputSize(renderer, &windowWidth, &windowHeight);
 
-    int dialRadius = std::max(50, std::min(windowWidth, windowHeight) / 16);
-    int spacing = dialRadius / 4;
+    int baseRadius = std::max(50, std::min(windowWidth, windowHeight) / 16);
+    int dialRadius = static_cast<int>(baseRadius * 1.35);
+    int spacing = dialRadius / 3;
     int marginX = std::max(5, windowWidth / 200);
     int panelWidth = std::max(240, windowWidth / 5);
 
@@ -454,10 +399,9 @@ void GUI::drawDials(SDL_Renderer* renderer, const Car& car) {
     torqueDial.draw(renderer, startX + dialRadius * 2 + spacing, startY, dialRadius, dialFont);
 
     airFlowDial.setValue(engine.getAirFlowRateValue());
-    airFlowDial.draw(renderer, startX, startY + dialRadius * 2 + spacing, dialRadius, dialFont);
+    airFlowDial.draw(renderer, startX + (dialRadius * 2 + spacing) * 2, startY, dialRadius, dialFont);
 
     double manifoldPressure = 101.325;
     manifoldPressureDial.setValue(manifoldPressure);
-    manifoldPressureDial.draw(renderer, startX + dialRadius * 2 + spacing,
-                              startY + dialRadius * 2 + spacing, dialRadius, dialFont);
+    manifoldPressureDial.draw(renderer, startX + (dialRadius * 2 + spacing) * 3, startY, dialRadius, dialFont);
 }
