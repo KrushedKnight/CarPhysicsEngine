@@ -382,7 +382,7 @@ void GUI::drawDials(SDL_Renderer* renderer, const Car& car) {
     SDL_GetRendererOutputSize(renderer, &windowWidth, &windowHeight);
 
     int baseRadius = std::max(50, std::min(windowWidth, windowHeight) / 16);
-    int dialRadius = static_cast<int>(baseRadius * 1.35);
+    int dialRadius = static_cast<int>(baseRadius * 1.55);
     int spacing = dialRadius / 3;
     int marginX = std::max(5, windowWidth / 200);
     int panelWidth = std::max(240, windowWidth / 5);
