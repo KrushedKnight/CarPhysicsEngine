@@ -87,7 +87,9 @@ void Car::updateEngine(double throttle) {
 
     Wheel* rearWheels[] = {backLeft, backRight};
 
-    double baseTorque = gearbox.convertEngineTorqueToWheel(engine.getEngineTorque(), &engine, std::max(backLeft->angular_velocity, backRight->angular_velocity));
+    double avgWheelOmega = (backLeft->angular_velocity + backRight->angular_velocity) / 2.0;
+    double totalWheelTorque = gearbox.convertEngineTorqueToWheel(engine.getEngineTorque(), &engine, avgWheelOmega);
+    double baseTorque = totalWheelTorque / 2.0;
     engine.addLoadTorque(gearbox.getClutchTorque());
     engine.updateRPM(throttle);
 

@@ -112,7 +112,7 @@ double Gearbox::convertEngineTorqueToWheel(double engineTorque, Engine* engine, 
     double torqueClutch;
 
     if (bite >= 1.0) {
-        double lockingK = PhysicsConstants::CLUTCH_SLIP_K * 2.0;
+        double lockingK = PhysicsConstants::CLUTCH_SLIP_K * 10.0;
         double maxLockingTorque = PhysicsConstants::CLUTCH_MAX_TORQUE;
         torqueClutch = std::clamp(slip * lockingK, -maxLockingTorque, maxLockingTorque);
     } else {
