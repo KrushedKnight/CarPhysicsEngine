@@ -4,8 +4,11 @@
 #include <iomanip>
 #include <cmath>
 
-GUI::GUI() : font(nullptr), visible(true), showGraphs(true), showDials(true), fontSize(16),
-             rpmDial(0.0, 8000.0, "ENGINE SPEED", "RPM") {
+GUI::GUI() : font(nullptr), dialFont(nullptr), visible(true), showGraphs(true), showDials(true), fontSize(16),
+             rpmDial(0.0, 8000.0, "RPM", ""),
+             torqueDial(0.0, 400.0, "TORQUE", "Nm"),
+             airFlowDial(0.0, 0.05, "AIR FLOW", "kg/s"),
+             manifoldPressureDial(0.0, 150.0, "MANIFOLD", "kPa") {
     graphs.emplace_back("Speed (m/s)", SDL_Color{0, 255, 0, 255}, 0.0, 50.0);
     graphs.emplace_back("Throttle/Brake", SDL_Color{255, 165, 0, 255}, -1.0, 1.0);
     graphs.emplace_back("Steering", SDL_Color{100, 200, 255, 255}, -1.0, 1.0);
@@ -18,6 +21,9 @@ GUI::GUI() : font(nullptr), visible(true), showGraphs(true), showDials(true), fo
 GUI::~GUI() {
     if (font != nullptr) {
         TTF_CloseFont(font);
+    }
+    if (dialFont != nullptr) {
+        TTF_CloseFont(dialFont);
     }
 }
 
@@ -51,6 +57,26 @@ bool GUI::initialize(const char* fontPath, int fontSize) {
     if (font == nullptr) {
         SDL_Log("Failed to load any font: %s", TTF_GetError());
         return false;
+    }
+
+    int dialFontSize = std::max(8, fontSize / 2);
+    if (fontPath != nullptr) {
+        dialFont = TTF_OpenFont(fontPath, dialFontSize);
+    }
+
+    if (dialFont == nullptr) {
+        const char* fallbackFonts[] = {
+            "/System/Library/Fonts/Menlo.ttc",
+            "/System/Library/Fonts/Courier.dfont",
+            "/usr/share/fonts/truetype/dejavu/DejaVuSansMono.ttf",
+            "/usr/share/fonts/TTF/DejaVuSansMono.ttf",
+            "C:\\Windows\\Fonts\\consola.ttf",
+            nullptr
+        };
+
+        for (int i = 0; fallbackFonts[i] != nullptr && dialFont == nullptr; i++) {
+            dialFont = TTF_OpenFont(fallbackFonts[i], dialFontSize);
+        }
     }
 
     return true;
@@ -411,10 +437,27 @@ void GUI::drawDials(SDL_Renderer* renderer, const Car& car) {
     int windowWidth, windowHeight;
     SDL_GetRendererOutputSize(renderer, &windowWidth, &windowHeight);
 
-    int dialRadius = std::min(windowWidth, windowHeight) / 8;
-    int centerX = windowWidth / 2;
-    int centerY = windowHeight - dialRadius - 50;
+    int dialRadius = std::max(50, std::min(windowWidth, windowHeight) / 16);
+    int spacing = dialRadius / 4;
+    int marginX = std::max(5, windowWidth / 200);
+    int panelWidth = std::max(240, windowWidth / 5);
 
-    rpmDial.setValue(car.getEngine().getRPM());
-    rpmDial.draw(renderer, centerX, centerY, dialRadius, font);
+    int startX = panelWidth + marginX * 3 + dialRadius;
+    int startY = marginX + dialRadius;
+
+    const Engine& engine = car.getEngine();
+
+    rpmDial.setValue(engine.getRPM());
+    rpmDial.draw(renderer, startX, startY, dialRadius, dialFont);
+
+    torqueDial.setValue(engine.getEngineTorque());
+    torqueDial.draw(renderer, startX + dialRadius * 2 + spacing, startY, dialRadius, dialFont);
+
+    airFlowDial.setValue(engine.getAirFlowRateValue());
+    airFlowDial.draw(renderer, startX, startY + dialRadius * 2 + spacing, dialRadius, dialFont);
+
+    double manifoldPressure = 101.325;
+    manifoldPressureDial.setValue(manifoldPressure);
+    manifoldPressureDial.draw(renderer, startX + dialRadius * 2 + spacing,
+                              startY + dialRadius * 2 + spacing, dialRadius, dialFont);
 }

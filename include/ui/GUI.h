@@ -34,6 +34,7 @@ public:
 
 private:
     TTF_Font* font;
+    TTF_Font* dialFont;
     bool visible;
     bool showGraphs;
     bool showDials;
@@ -41,6 +42,9 @@ private:
 
     std::vector<Graph> graphs;
     Dial rpmDial;
+    Dial torqueDial;
+    Dial airFlowDial;
+    Dial manifoldPressureDial;
 
     std::vector<std::string> formatCarStats(const Car& car, double throttle);
 
