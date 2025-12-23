@@ -15,6 +15,7 @@ private:
     double loadTorque;
     double engineTorque;
     double clutchTorque;
+    double clutchSlip;
 
 public:
     Gearbox(const std::vector<double>& ratios, double finalDriveRatio);
@@ -41,6 +42,7 @@ public:
     double getEngineTorque();
     double getClutchEngagement() const;
     double getClutchTorque() const;
+    double getClutchSlip() const;
 };
 
 #endif

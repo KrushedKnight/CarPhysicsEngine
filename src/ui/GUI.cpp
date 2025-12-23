@@ -12,6 +12,7 @@ GUI::GUI() : font(nullptr), dialFont(nullptr), visible(true), showGraphs(true), 
     graphs.emplace_back("Speed (m/s)", SDL_Color{0, 255, 0, 255}, 0.0, 50.0);
     graphs.emplace_back("Throttle/Brake", SDL_Color{255, 165, 0, 255}, -1.0, 1.0);
     graphs.emplace_back("Steering", SDL_Color{100, 200, 255, 255}, -1.0, 1.0);
+    graphs.emplace_back("Clutch Slip (rad/s)", SDL_Color{255, 255, 0, 255}, -500.0, 500.0);
     graphs.emplace_back("FL Grip", SDL_Color{255, 100, 100, 255}, 0.0, 1.0);
     graphs.emplace_back("FR Grip", SDL_Color{255, 150, 100, 255}, 0.0, 1.0);
     graphs.emplace_back("RL Grip", SDL_Color{200, 100, 255, 255}, 0.0, 1.0);
@@ -349,10 +350,13 @@ void GUI::updateGraphs(const Car& car, double throttle, double brake, double ste
 
     graphs[2].addDataPoint(steering);
 
-    graphs[3].addDataPoint(car.frontLeft->gripLevel);
-    graphs[4].addDataPoint(car.frontRight->gripLevel);
-    graphs[5].addDataPoint(car.backLeft->gripLevel);
-    graphs[6].addDataPoint(car.backRight->gripLevel);
+    const Gearbox& gearbox = car.getGearbox();
+    graphs[3].addDataPoint(gearbox.getClutchSlip());
+
+    graphs[4].addDataPoint(car.frontLeft->gripLevel);
+    graphs[5].addDataPoint(car.frontRight->gripLevel);
+    graphs[6].addDataPoint(car.backLeft->gripLevel);
+    graphs[7].addDataPoint(car.backRight->gripLevel);
 }
 
 void GUI::drawGraphs(SDL_Renderer* renderer) {

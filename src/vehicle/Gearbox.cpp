@@ -13,6 +13,7 @@ Gearbox::Gearbox(const std::vector<double>& ratios, double finalDriveRatio)
     this->loadTorque = 0.0;
     this->engineTorque = 0.0;
     this->clutchTorque = 0.0;
+    this->clutchSlip = 0.0;
 }
 
 bool Gearbox::isClutchHeld() const
@@ -100,6 +101,7 @@ double Gearbox::convertEngineTorqueToWheel(double engineTorque, Engine* engine, 
     if (selectedGear == -1 || clutchPressed)
     {
         this->clutchTorque = 0.0;
+        this->clutchSlip = 0.0;
         return 0.0;
     }
 
@@ -122,6 +124,7 @@ double Gearbox::convertEngineTorqueToWheel(double engineTorque, Engine* engine, 
 
     this->engineTorque = engineTorque - torqueClutch;
     this->clutchTorque = torqueClutch;
+    this->clutchSlip = slip;
 
     return torqueClutch / engineToWheelRatio(); //I made this change from wheel to engine ratio and this fixed it
 }
@@ -157,5 +160,10 @@ double Gearbox::getClutchEngagement() const
 double Gearbox::getClutchTorque() const
 {
     return clutchTorque;
+}
+
+double Gearbox::getClutchSlip() const
+{
+    return clutchSlip;
 }
 
