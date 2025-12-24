@@ -22,7 +22,7 @@ public:
     Gearbox(const std::vector<double>& ratios, double finalDriveRatio);
 
     double engineToWheelRatio();
-    double wheelToEngineRatio();
+    double wheelToEngineRatio() const;
 
     double convertEngineTorqueToWheel(double engineTorque, Engine* engine, double wheelOmega);
     double convertWheelTorqueToEngine(double wheelTorque);
@@ -44,6 +44,7 @@ public:
     double getClutchEngagement() const;
     double getClutchTorque() const;
     double getClutchSlip() const;
+    double getReflectedEngineInertia(double engineInertia) const;
 };
 
 #endif

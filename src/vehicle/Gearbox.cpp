@@ -38,9 +38,9 @@ double Gearbox::engineToWheelRatio()
     return this->getGearRatio();
 }
 
-double Gearbox::wheelToEngineRatio()
+double Gearbox::wheelToEngineRatio() const
 {
-    return 1.0 / engineToWheelRatio();
+    return 1.0 / getGearRatio();
 }
 
 int Gearbox::getCurrentGear() const
@@ -208,5 +208,14 @@ double Gearbox::getClutchTorque() const
 double Gearbox::getClutchSlip() const
 {
     return clutchSlip;
+}
+
+double Gearbox::getReflectedEngineInertia(double engineInertia) const
+{
+    if (selectedGear == -1 || clutchPressed) {
+        return 0.0;
+    }
+    double ratio = wheelToEngineRatio();
+    return engineInertia * ratio * ratio;
 }
 

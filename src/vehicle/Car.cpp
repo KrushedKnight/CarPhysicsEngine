@@ -1,6 +1,7 @@
 #include "vehicle/Car.h"
 #include "config/PhysicsConstants.h"
 #include "config/RenderingConstants.h"
+#include "config/EngineConstants.h"
 #include <cmath>
 #include <iostream>
 
@@ -143,6 +144,23 @@ void Car::updateEngine(double throttle) {
 
     double totalWheelTorque = gearbox.convertEngineTorqueToWheel(engine.getEngineTorque(), &engine, avgWheelOmega);
     double baseTorque = totalWheelTorque / 2.0;
+
+    double reflectedInertia = gearbox.getReflectedEngineInertia(EngineConstants::ENGINE_MOMENT_OF_INERTIA);
+    double wheelInertia = PhysicsConstants::WHEEL_MOMENT_OF_INERTIA;
+    double effectiveInertia = wheelInertia + reflectedInertia;
+    double inertiaCorrection = wheelInertia / effectiveInertia;
+
+    static int inertiaDebugCounter = 0;
+    if (inertiaDebugCounter++ % 30 == 0 && gearbox.getCurrentGear() >= 0) {
+        std::cout << "\n=== REFLECTED INERTIA ===" << std::endl;
+        std::cout << "Wheel I: " << wheelInertia << " kg·m² | Reflected Engine I: " << reflectedInertia << " kg·m²" << std::endl;
+        std::cout << "Effective I: " << effectiveInertia << " kg·m² | Correction: " << inertiaCorrection << std::endl;
+        std::cout << "Torque Before: " << (baseTorque / inertiaCorrection) << " Nm | After: " << (baseTorque / inertiaCorrection * inertiaCorrection) << " Nm" << std::endl;
+        std::cout << "========================" << std::endl;
+    }
+
+    baseTorque *= inertiaCorrection;
+
     engine.addLoadTorque(gearbox.getClutchTorque());
     engine.updateRPM(throttle);
 
