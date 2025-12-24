@@ -16,6 +16,7 @@ private:
     double engineTorque;
     double clutchTorque;
     double clutchSlip;
+    double heldTorque;
 
 public:
     Gearbox(const std::vector<double>& ratios, double finalDriveRatio);

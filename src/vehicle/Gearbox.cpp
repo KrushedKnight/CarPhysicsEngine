@@ -14,6 +14,7 @@ Gearbox::Gearbox(const std::vector<double>& ratios, double finalDriveRatio)
     this->engineTorque = 0.0;
     this->clutchTorque = 0.0;
     this->clutchSlip = 0.0;
+    this->heldTorque = 0.0;
 }
 
 bool Gearbox::isClutchHeld() const
@@ -102,6 +103,7 @@ double Gearbox::convertEngineTorqueToWheel(double engineTorque, Engine* engine, 
     {
         this->clutchTorque = 0.0;
         this->clutchSlip = 0.0;
+        this->heldTorque = 0.0;
         return 0.0;
     }
 
@@ -111,12 +113,12 @@ double Gearbox::convertEngineTorqueToWheel(double engineTorque, Engine* engine, 
     double transOmega = wheelOmega * wheelToEngineRatio();
     double slip = engineOmega - transOmega;
 
+    this->heldTorque = engineTorque;
     double torqueClutch;
 
     if (bite >= 1.0) {
-        double lockingK = PhysicsConstants::CLUTCH_SLIP_K * 10.0;
-        double maxLockingTorque = PhysicsConstants::CLUTCH_MAX_TORQUE;
-        torqueClutch = std::clamp(slip * lockingK, -maxLockingTorque, maxLockingTorque);
+        torqueClutch = heldTorque;
+        torqueClutch = std::clamp(torqueClutch, -PhysicsConstants::CLUTCH_MAX_TORQUE, PhysicsConstants::CLUTCH_MAX_TORQUE);
     } else {
         double torqueMax = bite * PhysicsConstants::CLUTCH_MAX_TORQUE;
         torqueClutch = std::clamp(slip * PhysicsConstants::CLUTCH_SLIP_K, -torqueMax, torqueMax);
@@ -126,7 +128,7 @@ double Gearbox::convertEngineTorqueToWheel(double engineTorque, Engine* engine, 
     this->clutchTorque = torqueClutch;
     this->clutchSlip = slip;
 
-    return torqueClutch / engineToWheelRatio(); //I made this change from wheel to engine ratio and this fixed it
+    return torqueClutch / engineToWheelRatio();
 }
 
 double Gearbox::convertWheelTorqueToEngine(double wheelTorque)
