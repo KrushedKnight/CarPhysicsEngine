@@ -3,7 +3,6 @@
 
 #include "vehicle/Car.h"
 #include "ui/GUI.h"
-#include "ui/FreeBodyDiagram.h"
 #include <Eigen/Dense>
 
 #include "config/PhysicsConstants.h"
@@ -62,11 +61,6 @@ int main(int argc, char* argv[]) {
         std::cerr << "Warning: Failed to initialize GUI" << std::endl;
     }
 
-    FreeBodyDiagram fbd;
-    if (!fbd.initialize(nullptr, fontSize)) {
-        std::cerr << "Warning: Failed to initialize FreeBodyDiagram" << std::endl;
-    }
-
     const double STEERING_INCREMENT = 2.0 * PhysicsConstants::DEG_TO_RAD;
 
     bool running = true;
@@ -83,8 +77,6 @@ int main(int argc, char* argv[]) {
                     gui.toggleHUD();
                 } else if (event.key.keysym.sym == SDLK_g) {
                     gui.toggleGraphs();
-                } else if (event.key.keysym.sym == SDLK_f) {
-                    fbd.toggleVisibility();
                 } else if (event.key.keysym.sym == SDLK_e) {
                     car.shiftUp();
                 } else if (event.key.keysym.sym == SDLK_c) {
@@ -130,9 +122,6 @@ int main(int argc, char* argv[]) {
         car.eraseCar(renderer);
         car.drawCar(renderer);
         gui.drawHUD(renderer, car, throttle);
-        if (fbd.isVisible()) {
-            fbd.draw(renderer, car);
-        }
         SDL_RenderPresent(renderer);
 
         car.incrementTime(PhysicsConstants::TIME_INTERVAL);
