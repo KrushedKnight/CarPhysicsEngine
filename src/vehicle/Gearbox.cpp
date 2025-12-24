@@ -129,20 +129,20 @@ double Gearbox::convertEngineTorqueToWheel(double engineTorque, Engine* engine, 
 
 static int debugCounter = 0;
     if (debugCounter++ % 10 == 0) {
-        std::cout << "EngineRPM: " << engine->getRPM()
-                  << " | WheelOmega: " << wheelOmega
-                  << " | EngineOmega: " << engineOmega
-                  << " | TransOmega: " << transOmega
-                  << " | Slip: " << slip
-                  << " | Bite: " << bite << std::endl;
+        std::cout << "\n=== CLUTCH DEBUG ===" << std::endl;
+        std::cout << "EngineRPM: " << engine->getRPM() << " | EngineOmega: " << engineOmega << " rad/s" << std::endl;
+        std::cout << "WheelOmega: " << wheelOmega << " rad/s | TransOmega: " << transOmega << " rad/s" << std::endl;
+        std::cout << "Slip: " << slip << " rad/s | SlipSign: " << (slip > 0 ? "POS (engine driving)" : "NEG (wheels driving)") << std::endl;
+        std::cout << "Bite: " << bite << " | GearRatio: " << (1.0 / engineToWheelRatio()) << ":1" << std::endl;
+        std::cout << "wheelToEngineRatio: " << wheelToEngineRatio() << std::endl;
     }
 
     this->heldTorque = engineTorque;
     double torqueClutch;
 
-    if (bite >= 0.95 ) {
-        double lockingK = PhysicsConstants::CLUTCH_SLIP_K * 50.0;
-        double dampingK = lockingK * 0.1;
+    if (bite >= PhysicsConstants::CLUTCH_LOCK_THRESHOLD) {
+        double lockingK = PhysicsConstants::CLUTCH_SLIP_K * 80.0;
+        double dampingK = lockingK * 0.15;
 
         double slipRate = (slip - this->clutchSlip) / PhysicsConstants::TIME_INTERVAL;
         torqueClutch = slip * lockingK + slipRate * dampingK;
@@ -156,7 +156,20 @@ static int debugCounter = 0;
     this->clutchTorque = torqueClutch;
     this->clutchSlip = slip;
 
-    return torqueClutch / engineToWheelRatio();
+    double wheelTorque = torqueClutch / engineToWheelRatio();
+
+    if (debugCounter % 10 == 1) {
+        std::cout << "EngineInputTorque: " << engineTorque << " Nm" << std::endl;
+        std::cout << "ClutchTorque: " << torqueClutch << " Nm | WheelTorque: " << wheelTorque << " Nm" << std::endl;
+        std::cout << "LockingMode: " << (bite >= PhysicsConstants::CLUTCH_LOCK_THRESHOLD ? "YES" : "NO");
+        if (bite >= PhysicsConstants::CLUTCH_LOCK_THRESHOLD) {
+            std::cout << " | lockingK=" << (PhysicsConstants::CLUTCH_SLIP_K * 80.0);
+        }
+        std::cout << std::endl;
+        std::cout << "===================" << std::endl;
+    }
+
+    return wheelTorque;
 }
 
 double Gearbox::convertWheelTorqueToEngine(double wheelTorque)
