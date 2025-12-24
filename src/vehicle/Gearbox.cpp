@@ -2,6 +2,7 @@
 
 #include "config/PhysicsConstants.h"
 #include "vehicle/Engine.h"
+#include <iostream>
 
 Gearbox::Gearbox(const std::vector<double>& ratios, double finalDriveRatio)
 {
@@ -99,11 +100,24 @@ double Gearbox::calculateBite()
 }
 double Gearbox::convertEngineTorqueToWheel(double engineTorque, Engine* engine, double wheelOmega)
 {
+    static int callCounter = 0;
+    if (callCounter++ % 60 == 0) {
+        std::cout << ">>> convertEngineTorqueToWheel CALLED | Gear: " << selectedGear
+                  << " | ClutchPressed: " << clutchPressed << std::endl;
+    }
+
     if (selectedGear == -1 || clutchPressed)
     {
         this->clutchTorque = 0.0;
-        this->clutchSlip = 0.0;
         this->heldTorque = 0.0;
+
+        if (selectedGear == -1) {
+            this->clutchSlip = 0.0;
+        } else {
+            double engineOmega = (2.0 * M_PI * engine->getRPM()) / 60.0;
+            double transOmega = wheelOmega * wheelToEngineRatio();
+            this->clutchSlip = engineOmega - transOmega;
+        }
         return 0.0;
     }
 
@@ -113,11 +127,25 @@ double Gearbox::convertEngineTorqueToWheel(double engineTorque, Engine* engine, 
     double transOmega = wheelOmega * wheelToEngineRatio();
     double slip = engineOmega - transOmega;
 
+    static int debugCounter = 0;
+    if (debugCounter++ % 10 == 0) {
+        std::cout << "EngineRPM: " << engine->getRPM()
+                  << " | WheelOmega: " << wheelOmega
+                  << " | EngineOmega: " << engineOmega
+                  << " | TransOmega: " << transOmega
+                  << " | Slip: " << slip
+                  << " | Bite: " << bite << std::endl;
+    }
+
     this->heldTorque = engineTorque;
     double torqueClutch;
 
-    if (bite >= 1.0) {
-        torqueClutch = heldTorque;
+    if (bite >= 0.95 ) {
+        double lockingK = PhysicsConstants::CLUTCH_SLIP_K * 50.0;
+        double dampingK = lockingK * 0.1;
+
+        double slipRate = (slip - this->clutchSlip) / PhysicsConstants::TIME_INTERVAL;
+        torqueClutch = slip * lockingK + slipRate * dampingK;
         torqueClutch = std::clamp(torqueClutch, -PhysicsConstants::CLUTCH_MAX_TORQUE, PhysicsConstants::CLUTCH_MAX_TORQUE);
     } else {
         double torqueMax = bite * PhysicsConstants::CLUTCH_MAX_TORQUE;
