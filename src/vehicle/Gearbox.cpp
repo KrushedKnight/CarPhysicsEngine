@@ -127,7 +127,7 @@ double Gearbox::convertEngineTorqueToWheel(double engineTorque, Engine* engine, 
     double transOmega = wheelOmega * wheelToEngineRatio();
     double slip = engineOmega - transOmega;
 
-    static int debugCounter = 0;
+static int debugCounter = 0;
     if (debugCounter++ % 10 == 0) {
         std::cout << "EngineRPM: " << engine->getRPM()
                   << " | WheelOmega: " << wheelOmega

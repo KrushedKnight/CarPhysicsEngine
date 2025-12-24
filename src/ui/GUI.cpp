@@ -13,6 +13,7 @@ GUI::GUI() : font(nullptr), dialFont(nullptr), visible(true), showGraphs(true), 
     graphs.emplace_back("Throttle/Brake", SDL_Color{255, 165, 0, 255}, -1.0, 1.0);
     graphs.emplace_back("Steering", SDL_Color{100, 200, 255, 255}, -1.0, 1.0);
     graphs.emplace_back("Clutch Slip (rad/s)", SDL_Color{255, 255, 0, 255}, -500.0, 500.0);
+    graphs.emplace_back("Clutch Engagement", SDL_Color{255, 200, 100, 255}, 0.0, 1.0);
     graphs.emplace_back("FL Grip", SDL_Color{255, 100, 100, 255}, 0.0, 1.0);
     graphs.emplace_back("FR Grip", SDL_Color{255, 150, 100, 255}, 0.0, 1.0);
     graphs.emplace_back("RL Grip", SDL_Color{200, 100, 255, 255}, 0.0, 1.0);
@@ -215,10 +216,10 @@ void GUI::drawHUD(SDL_Renderer* renderer, const Car& car, double throttle) {
 
     SDL_Rect panel = {marginX, marginY, panelWidth, panelHeight};
     SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
-    SDL_SetRenderDrawColor(renderer, 0, 0, 0, 180);
+    SDL_SetRenderDrawColor(renderer, 13, 13, 13, 220);
     SDL_RenderFillRect(renderer, &panel);
 
-    SDL_SetRenderDrawColor(renderer, 100, 100, 100, 255);
+    SDL_SetRenderDrawColor(renderer, 60, 60, 60, 255);
     SDL_RenderDrawRect(renderer, &panel);
 
     SDL_Color textColor = {255, 255, 255, 255};
@@ -298,33 +299,40 @@ void GUI::drawHUD(SDL_Renderer* renderer, const Car& car, double throttle) {
         SDL_RenderFillRect(renderer, &barFill);
     }
 
-    int gearPanelY = absBarY + barHeight + padding * 2;
-    int gearPanelHeight = lineHeight * 2 + padding * 2;
-
-    SDL_Rect gearPanel = {panel.x, gearPanelY, panelWidth, gearPanelHeight};
-    SDL_SetRenderDrawColor(renderer, 0, 0, 0, 180);
-    SDL_RenderFillRect(renderer, &gearPanel);
-
-    SDL_SetRenderDrawColor(renderer, 100, 100, 100, 255);
-    SDL_RenderDrawRect(renderer, &gearPanel);
-
-    int gearTextY = gearPanelY + padding;
-
     int currentGear = car.getCurrentGear();
-    std::string gearText;
-    if (currentGear == -2) {
-        gearText = "Gear: R";
-    } else if (currentGear == -1) {
-        gearText = "Gear: N";
-    } else {
-        gearText = "Gear: " + std::to_string(currentGear + 1);
-    }
-    drawText(renderer, gearText, textX, gearTextY, {255, 255, 255, 255});
 
-    std::string clutchText = "Clutch: ";
-    clutchText += car.isClutchHeld() ? "HELD" : "Released";
-    SDL_Color clutchColor = car.isClutchHeld() ? SDL_Color{255, 255, 0, 255} : SDL_Color{200, 200, 200, 255};
-    drawText(renderer, clutchText, textX, gearTextY + lineHeight, clutchColor);
+    int speedPanelWidth = std::max(180, windowWidth / 7);
+    int speedPanelHeight = lineHeight * 6;
+    int speedPanelX = windowWidth - speedPanelWidth - marginX;
+    int speedPanelY = windowHeight / 2 - speedPanelHeight / 2;
+
+    SDL_Rect speedPanel = {speedPanelX, speedPanelY, speedPanelWidth, speedPanelHeight};
+    SDL_SetRenderDrawColor(renderer, 13, 13, 13, 220);
+    SDL_RenderFillRect(renderer, &speedPanel);
+    SDL_SetRenderDrawColor(renderer, 60, 60, 60, 255);
+    SDL_RenderDrawRect(renderer, &speedPanel);
+
+    std::ostringstream speedOss;
+    speedOss << std::fixed << std::setprecision(1) << (car.velocity.norm() * 3.6);
+    std::string speedText = speedOss.str();
+
+    int speedTextX = speedPanelX + padding;
+    int speedTextY = speedPanelY + padding;
+
+    drawText(renderer, "SPEED", speedTextX, speedTextY, {150, 150, 150, 255});
+    drawText(renderer, speedText + " km/h", speedTextX, speedTextY + lineHeight, {0, 255, 0, 255});
+
+    speedTextY += lineHeight * 3;
+    drawText(renderer, "GEAR", speedTextX, speedTextY, {150, 150, 150, 255});
+
+    if (currentGear == -2) {
+        drawText(renderer, "R", speedTextX, speedTextY + lineHeight, {255, 100, 100, 255});
+    } else if (currentGear == -1) {
+        drawText(renderer, "N", speedTextX, speedTextY + lineHeight, {200, 200, 200, 255});
+    } else {
+        std::string gearNum = std::to_string(currentGear + 1);
+        drawText(renderer, gearNum, speedTextX, speedTextY + lineHeight, {0, 255, 0, 255});
+    }
 
     drawGraphs(renderer);
     drawDials(renderer, car);
@@ -352,11 +360,12 @@ void GUI::updateGraphs(const Car& car, double throttle, double brake, double ste
 
     const Gearbox& gearbox = car.getGearbox();
     graphs[3].addDataPoint(gearbox.getClutchSlip());
+    graphs[4].addDataPoint(gearbox.getClutchEngagement());
 
-    graphs[4].addDataPoint(car.frontLeft->gripLevel);
-    graphs[5].addDataPoint(car.frontRight->gripLevel);
-    graphs[6].addDataPoint(car.backLeft->gripLevel);
-    graphs[7].addDataPoint(car.backRight->gripLevel);
+    graphs[5].addDataPoint(car.frontLeft->gripLevel);
+    graphs[6].addDataPoint(car.frontRight->gripLevel);
+    graphs[7].addDataPoint(car.backLeft->gripLevel);
+    graphs[8].addDataPoint(car.backRight->gripLevel);
 }
 
 void GUI::drawGraphs(SDL_Renderer* renderer) {
@@ -368,15 +377,33 @@ void GUI::drawGraphs(SDL_Renderer* renderer) {
     int graphWidth = std::max(200, windowWidth / 6);
     int graphHeight = std::max(50, windowHeight / 13);
     int graphPadding = std::max(5, windowHeight / 100);
-    int marginX = std::max(5, windowWidth / 200);
+    int marginX = std::max(10, windowWidth / 200);
     int marginY = std::max(5, windowHeight / 200);
-    int startX = windowWidth - graphWidth - marginX;
-    int startY = marginY;
 
-    for (size_t i = 0; i < graphs.size(); i++) {
-        int graphY = startY + static_cast<int>(i) * (graphHeight + graphPadding);
-        graphs[i].render(renderer, startX, graphY, graphWidth, graphHeight, font);
-    }
+    int leftStartX = marginX;
+    int leftStartY = windowHeight / 2 + windowHeight / 8;
+
+    graphs[3].render(renderer, leftStartX, leftStartY, graphWidth, graphHeight, font);
+
+    int baseRadius = std::max(50, std::min(windowWidth, windowHeight) / 16);
+    int dialRadius = static_cast<int>(baseRadius * 1.55);
+    int dialBottomY = marginY + dialRadius * 2 + marginY;
+
+    int rightStartX = windowWidth - graphWidth - marginX;
+    int rightStartY = marginY * 3;
+
+    graphs[0].render(renderer, rightStartX, rightStartY, graphWidth, graphHeight, font);
+    graphs[1].render(renderer, rightStartX, rightStartY + (graphHeight + graphPadding), graphWidth, graphHeight, font);
+    graphs[2].render(renderer, rightStartX, rightStartY + 2 * (graphHeight + graphPadding), graphWidth, graphHeight, font);
+    graphs[4].render(renderer, rightStartX, rightStartY + 3 * (graphHeight + graphPadding), graphWidth, graphHeight, font);
+
+    int bottomStartY = windowHeight - (graphHeight + graphPadding) * 4 - marginY;
+    int bottomStartX = marginX;
+
+    graphs[5].render(renderer, bottomStartX, bottomStartY, graphWidth, graphHeight, font);
+    graphs[6].render(renderer, bottomStartX, bottomStartY + (graphHeight + graphPadding), graphWidth, graphHeight, font);
+    graphs[7].render(renderer, bottomStartX, bottomStartY + 2 * (graphHeight + graphPadding), graphWidth, graphHeight, font);
+    graphs[8].render(renderer, bottomStartX, bottomStartY + 3 * (graphHeight + graphPadding), graphWidth, graphHeight, font);
 }
 
 void GUI::drawDials(SDL_Renderer* renderer, const Car& car) {
@@ -388,11 +415,11 @@ void GUI::drawDials(SDL_Renderer* renderer, const Car& car) {
     int baseRadius = std::max(50, std::min(windowWidth, windowHeight) / 16);
     int dialRadius = static_cast<int>(baseRadius * 1.55);
     int spacing = dialRadius / 3;
-    int marginX = std::max(5, windowWidth / 200);
-    int panelWidth = std::max(240, windowWidth / 5);
+    int marginY = std::max(10, windowHeight / 100);
 
-    int startX = panelWidth + marginX * 3 + dialRadius;
-    int startY = marginX + dialRadius;
+    int totalWidth = dialRadius * 8 + spacing * 3;
+    int startX = (windowWidth - totalWidth) / 2 + dialRadius;
+    int startY = marginY + dialRadius;
 
     const Engine& engine = car.getEngine();
 
