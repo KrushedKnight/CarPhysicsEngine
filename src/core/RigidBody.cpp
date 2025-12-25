@@ -5,6 +5,7 @@
 
 #include "config/PhysicsConstants.h"
 #include "config/RenderingConstants.h"
+#include "rendering/Camera.h"
 
 RigidBody::RigidBody()
     : velocity(Eigen::Vector2d::Zero()), acceleration(Eigen::Vector2d::Zero()), forces(Eigen::Vector2d::Zero()),
@@ -14,11 +15,17 @@ RigidBody::RigidBody()
     moment_of_inertia = RenderingConstants::CAR_MOMENT_OF_INERTIA;
 }
 
-int RigidBody::getPositionX() {
+int RigidBody::getPositionX(const Camera* camera, int screenWidth) {
+    if (camera != nullptr && screenWidth > 0) {
+        return camera->worldToScreenX(pos_x, screenWidth);
+    }
     return std::floor(pos_x);
 }
 
-int RigidBody::getPositionY() {
+int RigidBody::getPositionY(const Camera* camera, int screenHeight) {
+    if (camera != nullptr && screenHeight > 0) {
+        return camera->worldToScreenY(pos_y, screenHeight);
+    }
     return std::floor(pos_y);
 }
 

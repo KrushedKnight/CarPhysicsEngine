@@ -3,6 +3,7 @@
 
 #include "vehicle/Car.h"
 #include "ui/GUI.h"
+#include "rendering/Camera.h"
 #include <Eigen/Dense>
 
 #include "config/PhysicsConstants.h"
@@ -54,6 +55,8 @@ int main(int argc, char* argv[]) {
     SDL_Event event;
 
     Car car{RenderingConstants::CENTER_X, RenderingConstants::CENTER_Y, RenderingConstants::CAR_WIDTH, RenderingConstants::CAR_LENGTH};
+
+    Camera camera(car.pos_x, car.pos_y, 0.1);
 
     GUI gui;
     int fontSize = std::max(12, screenHeight / 60);
@@ -122,8 +125,10 @@ int main(int argc, char* argv[]) {
 
         gui.updateGraphs(car, car.actualThrottle, car.actualBrake, car.actualSteering);
 
+        camera.followTargetSmooth(car.pos_x, car.pos_y);
+
         car.eraseCar(renderer);
-        car.drawCar(renderer);
+        car.drawCar(renderer, &camera);
         gui.drawHUD(renderer, car, car.actualThrottle);
         SDL_RenderPresent(renderer);
 

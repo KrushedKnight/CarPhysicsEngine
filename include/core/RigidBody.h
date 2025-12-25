@@ -4,6 +4,8 @@
 #include <map>
 #include <string>
 
+class Camera;
+
 class RigidBody {
 public:
     double pos_x;
@@ -24,8 +26,8 @@ public:
 
     RigidBody();
 
-    int getPositionX();
-    int getPositionY();
+    int getPositionX(const Camera* camera = nullptr, int screenWidth = 0);
+    int getPositionY(const Camera* camera = nullptr, int screenHeight = 0);
 
     void addForce(Eigen::Vector2d force, const std::string& name = "");
 

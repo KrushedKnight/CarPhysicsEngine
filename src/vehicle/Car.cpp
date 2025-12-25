@@ -370,22 +370,27 @@ void Car::updateLoadTransfer() {
     }
 }
 
-void Car::drawCar(SDL_Renderer* renderer) {
+void Car::drawCar(SDL_Renderer* renderer, const Camera* camera) {
     SDL_Texture* tex = getRectangleTexture(renderer);
-    SDL_Rect rect{getPositionX(), getPositionY(), getWidth(), getHeight()};
+    SDL_Rect rect{
+        getPositionX(camera, RenderingConstants::SDL_WINDOW_WIDTH),
+        getPositionY(camera, RenderingConstants::SDL_WINDOW_LENGTH),
+        getWidth(),
+        getHeight()
+    };
 
     double angleDegrees = angular_position * PhysicsConstants::RAD_TO_DEG;
 
     SDL_RenderCopyEx(renderer, tex, NULL, &rect, angleDegrees, NULL, SDL_FLIP_NONE);
 
-    drawDebugVectors(renderer);
+    drawDebugVectors(renderer, camera);
 }
 
-void Car::drawDebugVectors(SDL_Renderer* renderer) {
+void Car::drawDebugVectors(SDL_Renderer* renderer, const Camera* camera) {
     if (!showDebugVectors) return;
 
-    int centerX = getPositionX() + getWidth() / 2;
-    int centerY = getPositionY() + getHeight() / 2;
+    int centerX = getPositionX(camera, RenderingConstants::SDL_WINDOW_WIDTH) + getWidth() / 2;
+    int centerY = getPositionY(camera, RenderingConstants::SDL_WINDOW_LENGTH) + getHeight() / 2;
 
     const double velocityScale = 5.0;
     const double accelScale = 20.0;

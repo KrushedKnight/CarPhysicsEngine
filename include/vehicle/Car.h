@@ -40,8 +40,8 @@ class Car : public RigidBody {
         const int getWidth();
         const int getHeight();
 
-        void drawCar(SDL_Renderer* renderer);
-        void drawDebugVectors(SDL_Renderer* renderer);
+        void drawCar(SDL_Renderer* renderer, const Camera* camera = nullptr);
+        void drawDebugVectors(SDL_Renderer* renderer, const Camera* camera = nullptr);
         void eraseCar(SDL_Renderer *renderer);
 
         double getAngleToWheel(Wheel *wheel);
