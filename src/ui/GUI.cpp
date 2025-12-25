@@ -182,100 +182,10 @@ void GUI::drawHUD(SDL_Renderer* renderer, const Car& car, double throttle) {
     int windowWidth, windowHeight;
     SDL_GetRendererOutputSize(renderer, &windowWidth, &windowHeight);
 
-    std::vector<std::string> stats = formatCarStats(car, throttle);
-
     int padding = std::max(5, windowHeight / 100);
     int lineHeight = fontSize + std::max(2, windowHeight / 250);
-    int panelWidth = std::max(240, windowWidth / 5);
-    int panelHeight = stats.size() * lineHeight + 2 * padding;
-
     int marginX = std::max(5, windowWidth / 200);
     int marginY = std::max(5, windowHeight / 200);
-
-    SDL_Rect panel = {marginX, marginY, panelWidth, panelHeight};
-    SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
-    SDL_SetRenderDrawColor(renderer, 13, 13, 13, 220);
-    SDL_RenderFillRect(renderer, &panel);
-
-    SDL_SetRenderDrawColor(renderer, 60, 60, 60, 255);
-    SDL_RenderDrawRect(renderer, &panel);
-
-    SDL_Color textColor = {255, 255, 255, 255};
-    int textX = panel.x + padding;
-    int textY = panel.y + padding;
-
-    for (size_t i = 0; i < stats.size(); i++) {
-        drawText(renderer, stats[i], textX, textY, textColor);
-        textY += lineHeight;
-    }
-
-    double maxTcsInterference = std::max(car.backLeft->tcsInterference, car.backRight->tcsInterference);
-
-    int barY = panel.y + panel.h + padding;
-    int barHeight = std::max(15, windowHeight / 50);
-    int barWidth = panelWidth - 2 * padding;
-    int barX = panel.x + padding;
-
-    drawText(renderer, "TCS:", barX, barY, {200, 200, 200, 255});
-
-    int labelWidth = 35;
-    int actualBarX = barX + labelWidth;
-    int actualBarWidth = barWidth - labelWidth;
-
-    SDL_Rect barBackground = {actualBarX, barY, actualBarWidth, barHeight};
-    SDL_SetRenderDrawColor(renderer, 40, 40, 40, 200);
-    SDL_RenderFillRect(renderer, &barBackground);
-
-    SDL_SetRenderDrawColor(renderer, 80, 80, 80, 255);
-    SDL_RenderDrawRect(renderer, &barBackground);
-
-    if (maxTcsInterference > 0.0) {
-        int fillWidth = static_cast<int>(std::min(1.0, maxTcsInterference / 120.0) * actualBarWidth);
-        SDL_Rect barFill = {actualBarX, barY, fillWidth, barHeight};
-
-        SDL_Color barColor;
-        if (maxTcsInterference < 40) {
-            barColor = {0, 255, 0, 255};
-        } else if (maxTcsInterference < 80) {
-            barColor = {255, 255, 0, 255};
-        } else {
-            barColor = {255, 0, 0, 255};
-        }
-
-        SDL_SetRenderDrawColor(renderer, barColor.r, barColor.g, barColor.b, barColor.a);
-        SDL_RenderFillRect(renderer, &barFill);
-    }
-
-    double maxAbsInterference = std::max({car.frontLeft->absInterference, car.frontRight->absInterference,
-                                           car.backLeft->absInterference, car.backRight->absInterference});
-
-    int absBarY = barY + barHeight + padding;
-
-    drawText(renderer, "ABS:", barX, absBarY, {200, 200, 200, 255});
-
-    SDL_Rect absBarBackground = {actualBarX, absBarY, actualBarWidth, barHeight};
-    SDL_SetRenderDrawColor(renderer, 40, 40, 40, 200);
-    SDL_RenderFillRect(renderer, &absBarBackground);
-
-    SDL_SetRenderDrawColor(renderer, 80, 80, 80, 255);
-    SDL_RenderDrawRect(renderer, &absBarBackground);
-
-    if (maxAbsInterference > 0.0) {
-        int fillWidth = static_cast<int>(std::min(1.0, maxAbsInterference / 30.0) * actualBarWidth);
-        SDL_Rect barFill = {actualBarX, absBarY, fillWidth, barHeight};
-
-        SDL_Color barColor;
-        if (maxAbsInterference < 10) {
-            barColor = {0, 255, 0, 255};
-        } else if (maxAbsInterference < 20) {
-            barColor = {255, 255, 0, 255};
-        } else {
-            barColor = {255, 0, 0, 255};
-        }
-
-        SDL_SetRenderDrawColor(renderer, barColor.r, barColor.g, barColor.b, barColor.a);
-        SDL_RenderFillRect(renderer, &barFill);
-    }
 
     int currentGear = car.getCurrentGear();
 
@@ -290,7 +200,8 @@ void GUI::drawHUD(SDL_Renderer* renderer, const Car& car, double throttle) {
     int speedPanelY = dialBottomY + padding * 2;
 
     SDL_Rect speedPanel = {speedPanelX, speedPanelY, speedPanelWidth, speedPanelHeight};
-    SDL_SetRenderDrawColor(renderer, 13, 13, 13, 220);
+    SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
+    SDL_SetRenderDrawColor(renderer, 20, 20, 20, 200);
     SDL_RenderFillRect(renderer, &speedPanel);
     SDL_SetRenderDrawColor(renderer, 60, 60, 60, 255);
     SDL_RenderDrawRect(renderer, &speedPanel);
@@ -374,6 +285,16 @@ void GUI::drawGraphs(SDL_Renderer* renderer) {
     int rightStartX = windowWidth - graphWidth - marginX;
     int rightStartY = speedPanelBottomY + graphPadding * 3;
 
+    SDL_Rect rightGraphsPanel = {
+        rightStartX - graphPadding,
+        rightStartY - graphPadding,
+        graphWidth + graphPadding * 2,
+        graphHeight * 3 + graphPadding * 4
+    };
+    SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
+    SDL_SetRenderDrawColor(renderer, 20, 20, 20, 200);
+    SDL_RenderFillRect(renderer, &rightGraphsPanel);
+
     graphs[1].render(renderer, rightStartX, rightStartY, graphWidth, graphHeight, font);
     graphs[2].render(renderer, rightStartX, rightStartY + (graphHeight + graphPadding), graphWidth, graphHeight, font);
     graphs[4].render(renderer, rightStartX, rightStartY + 2 * (graphHeight + graphPadding), graphWidth, graphHeight, font);
@@ -382,7 +303,26 @@ void GUI::drawGraphs(SDL_Renderer* renderer) {
     int bottomStartX = marginX;
 
     int clutchSlipY = bottomStartY - graphHeight - graphPadding * 3;
+
+    SDL_Rect clutchSlipPanel = {
+        bottomStartX - graphPadding,
+        clutchSlipY - graphPadding,
+        graphWidth + graphPadding * 2,
+        graphHeight + graphPadding * 2
+    };
+    SDL_SetRenderDrawColor(renderer, 20, 20, 20, 200);
+    SDL_RenderFillRect(renderer, &clutchSlipPanel);
+
     graphs[3].render(renderer, bottomStartX, clutchSlipY, graphWidth, graphHeight, font);
+
+    SDL_Rect gripGraphsPanel = {
+        bottomStartX - graphPadding,
+        bottomStartY - graphPadding,
+        graphWidth + graphPadding * 2,
+        graphHeight * 4 + graphPadding * 5
+    };
+    SDL_SetRenderDrawColor(renderer, 20, 20, 20, 200);
+    SDL_RenderFillRect(renderer, &gripGraphsPanel);
 
     graphs[5].render(renderer, bottomStartX, bottomStartY, graphWidth, graphHeight, font);
     graphs[6].render(renderer, bottomStartX, bottomStartY + (graphHeight + graphPadding), graphWidth, graphHeight, font);
@@ -408,14 +348,38 @@ void GUI::drawDials(SDL_Renderer* renderer, const Car& car) {
     int primaryStartX = windowWidth - marginX - primaryDialRadius - (primaryDialRadius * 2 + spacing);
     int primaryStartY = marginY + primaryDialRadius;
 
+    SDL_Rect primaryDialsPanel = {
+        primaryStartX - primaryDialRadius - marginX / 2,
+        marginY - marginY / 2,
+        primaryDialRadius * 4 + spacing + marginX,
+        primaryDialRadius * 2 + marginY
+    };
+    SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
+    SDL_SetRenderDrawColor(renderer, 20, 20, 20, 200);
+    SDL_RenderFillRect(renderer, &primaryDialsPanel);
+    SDL_SetRenderDrawColor(renderer, 60, 60, 60, 255);
+    SDL_RenderDrawRect(renderer, &primaryDialsPanel);
+
     speedDial.setValue(car.velocity.norm() * 3.6);
     speedDial.draw(renderer, primaryStartX, primaryStartY, primaryDialRadius, dialFont);
 
     rpmDial.setValue(engine.getRPM());
     rpmDial.draw(renderer, primaryStartX + primaryDialRadius * 2 + spacing, primaryStartY, primaryDialRadius, dialFont);
 
-    int secondaryStartX = windowWidth / 2 - (secondaryDialRadius * 6 + spacing * 2.5) + windowWidth / 8;
-    int secondaryStartY = windowHeight - marginY - secondaryDialRadius;
+    int secondaryStartX = windowWidth / 2 - (secondaryDialRadius * 6 + spacing * 2.5) - windowWidth / 10;
+    int secondaryStartY = primaryStartY;
+
+    int graphPadding = std::max(10, windowHeight / 80);
+    SDL_Rect secondaryDialsPanel = {
+        secondaryStartX - secondaryDialRadius - graphPadding,
+        secondaryStartY - secondaryDialRadius - graphPadding,
+        (secondaryDialRadius * 2 + spacing) * 5 + secondaryDialRadius * 2 + graphPadding * 2,
+        secondaryDialRadius * 2 + graphPadding * 2
+    };
+    SDL_SetRenderDrawColor(renderer, 20, 20, 20, 200);
+    SDL_RenderFillRect(renderer, &secondaryDialsPanel);
+    SDL_SetRenderDrawColor(renderer, 60, 60, 60, 255);
+    SDL_RenderDrawRect(renderer, &secondaryDialsPanel);
 
     torqueDial.setValue(engine.getEngineTorque());
     torqueDial.draw(renderer, secondaryStartX, secondaryStartY, secondaryDialRadius, dialFont);
