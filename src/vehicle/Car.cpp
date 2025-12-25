@@ -2,6 +2,7 @@
 #include "config/PhysicsConstants.h"
 #include "config/RenderingConstants.h"
 #include "config/EngineConstants.h"
+#include "rendering/Camera.h"
 #include <cmath>
 #include <iostream>
 
@@ -17,16 +18,20 @@ Car::Car(double x, double y, int w, int h)
     double halfLength = (RenderingConstants::CAR_LENGTH / 10.0) / 2.0;
 
     frontLeft = new Wheel();
-    frontLeft->position = Eigen::Vector2d(-halfWidth, halfLength);
+    frontLeft->position = Eigen::Vector2d(-halfWidth + RenderingConstants::WHEEL_WIDTH_INSET,
+                                           halfLength - RenderingConstants::WHEEL_LENGTH_INSET);
 
     frontRight = new Wheel();
-    frontRight->position = Eigen::Vector2d(halfWidth, halfLength);
+    frontRight->position = Eigen::Vector2d(halfWidth - RenderingConstants::WHEEL_WIDTH_INSET,
+                                            halfLength - RenderingConstants::WHEEL_LENGTH_INSET);
 
     backLeft = new Wheel();
-    backLeft->position = Eigen::Vector2d(-halfWidth, -halfLength);
+    backLeft->position = Eigen::Vector2d(-halfWidth + RenderingConstants::WHEEL_WIDTH_INSET,
+                                          -halfLength + RenderingConstants::WHEEL_LENGTH_INSET);
 
     backRight = new Wheel();
-    backRight->position = Eigen::Vector2d(halfWidth, -halfLength);
+    backRight->position = Eigen::Vector2d(halfWidth - RenderingConstants::WHEEL_WIDTH_INSET,
+                                           -halfLength + RenderingConstants::WHEEL_LENGTH_INSET);
 
     wheels.assign({frontLeft, frontRight, backLeft, backRight});
 }
@@ -383,6 +388,37 @@ void Car::drawCar(SDL_Renderer* renderer, const Camera* camera) {
 
     SDL_RenderCopyEx(renderer, tex, NULL, &rect, angleDegrees, NULL, SDL_FLIP_NONE);
 
+    double cos_angle = cos(angular_position);
+    double sin_angle = sin(angular_position);
+
+    int carCenterX = rect.x + rect.w / 2;
+    int carCenterY = rect.y + rect.h / 2;
+
+    for (Wheel* wheel : wheels) {
+        double worldX = pos_x + wheel->position.x() * cos_angle - wheel->position.y() * sin_angle;
+        double worldY = pos_y + wheel->position.x() * sin_angle + wheel->position.y() * cos_angle;
+
+        wheel->pos_x = worldX;
+        wheel->pos_y = worldY;
+
+        double wheelLocalPixelX = wheel->position.x() * 10;
+        double wheelLocalPixelY = wheel->position.y() * 10;
+
+        int wheelScreenX = carCenterX + static_cast<int>(wheelLocalPixelX * cos_angle - wheelLocalPixelY * sin_angle);
+        int wheelScreenY = carCenterY + static_cast<int>(wheelLocalPixelX * sin_angle + wheelLocalPixelY * cos_angle);
+
+        int tireRadius = static_cast<int>(PhysicsConstants::WHEEL_RADIUS * 10);
+        SDL_Rect tireRect = {
+            wheelScreenX - tireRadius,
+            wheelScreenY - tireRadius,
+            tireRadius * 2,
+            tireRadius * 2
+        };
+
+        SDL_SetRenderDrawColor(renderer, 40, 40, 40, 255);
+        SDL_RenderFillRect(renderer, &tireRect);
+    }
+
     drawDebugVectors(renderer, camera);
 }
 
@@ -445,11 +481,11 @@ SDL_Texture* Car::getRectangleTexture(SDL_Renderer* renderer) {
         int w = static_cast<int>(width);
         int h = static_cast<int>(height);
 
-        SDL_SetRenderDrawColor(renderer, 58, 58, 58, 255);
+        SDL_SetRenderDrawColor(renderer, 180, 180, 180, 255);
         SDL_Rect body = {0, 0, w, h};
         SDL_RenderFillRect(renderer, &body);
 
-        SDL_SetRenderDrawColor(renderer, 65, 65, 65, 255);
+        SDL_SetRenderDrawColor(renderer, 220, 220, 220, 255);
         SDL_Rect frontIndicator = {0, 0, w, h/10};
         SDL_RenderFillRect(renderer, &frontIndicator);
 

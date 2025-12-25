@@ -18,6 +18,9 @@ namespace RenderingConstants {
     extern double TRACK_WIDTH;
     extern double CAR_MOMENT_OF_INERTIA;
 
+    constexpr double WHEEL_WIDTH_INSET = 0.1;
+    constexpr double WHEEL_LENGTH_INSET = 0.15;
+
     void initializeScreenDependentConstants(int screenWidth, int screenHeight);
 }
 
