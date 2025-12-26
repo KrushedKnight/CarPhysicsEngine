@@ -188,6 +188,11 @@ void Car::updateEngine(double throttle) {
             wheelVelocityLocal,
             PhysicsConstants::TIME_INTERVAL
         );
+
+        if (engine.getRPM() >= 8000.0 && adjustedTorque > 0.0) {
+            adjustedTorque = 0.0;
+        }
+
         wheel->addTorque(adjustedTorque);
     }
 

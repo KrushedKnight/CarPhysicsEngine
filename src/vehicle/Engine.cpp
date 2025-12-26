@@ -61,8 +61,10 @@ double Engine::calculateTorque(double throttle)
 {
     double effectiveThrottle = throttle;
 
-    if (rpm >= 8000.0) {
-        effectiveThrottle = 0.0;
+    if (rpm >= 7800.0) {
+        double excessRPM = rpm - 7800.0;
+        double reductionFactor = std::max(0.0, 1.0 - (excessRPM / 200.0));
+        effectiveThrottle *= reductionFactor;
     } else if (throttle < 0.01) {
         effectiveThrottle = 0.05;
     }
