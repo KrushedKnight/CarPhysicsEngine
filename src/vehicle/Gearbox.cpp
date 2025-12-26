@@ -229,3 +229,12 @@ double Gearbox::getReflectedEngineInertia(double engineInertia) const
     return engineInertia * ratio * ratio;
 }
 
+double Gearbox::getReflectedWheelInertia(double wheelInertia) const
+{
+    if (selectedGear == -1 || clutchPressed) {
+        return 0.0;
+    }
+    double ratio = wheelToEngineRatio();
+    return wheelInertia / (ratio * ratio);
+}
+

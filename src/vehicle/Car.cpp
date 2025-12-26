@@ -166,8 +166,11 @@ void Car::updateEngine(double throttle) {
 
     baseTorque *= inertiaCorrection;
 
+    double reflectedWheelInertia = gearbox.getReflectedWheelInertia(PhysicsConstants::WHEEL_MOMENT_OF_INERTIA * 2.0);
+    double effectiveEngineInertia = EngineConstants::ENGINE_MOMENT_OF_INERTIA + reflectedWheelInertia;
+
     engine.addLoadTorque(gearbox.getClutchTorque());
-    engine.updateRPM(throttle);
+    engine.updateRPM(throttle, effectiveEngineInertia);
 
     if (engine.getRPM() < 800.0 && getCurrentGear() != -1) {
         while (getCurrentGear() > -1) {

@@ -21,7 +21,7 @@ private:
 
 
 public:
-    void updateRPM(double throttle);
+    void updateRPM(double throttle, double effectiveInertia);
     double getRPM() const;
     double calculateTorque(double throttle);
     void addLoadTorque(double torque);

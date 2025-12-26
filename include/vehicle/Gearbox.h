@@ -45,6 +45,7 @@ public:
     double getClutchTorque() const;
     double getClutchSlip() const;
     double getReflectedEngineInertia(double engineInertia) const;
+    double getReflectedWheelInertia(double wheelInertia) const;
 };
 
 #endif
