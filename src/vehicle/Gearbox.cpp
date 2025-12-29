@@ -148,18 +148,28 @@ static int debugCounter = 0;
     }
 
     this->heldTorque = engineTorque;
-    double torqueClutch;
+    double targetTorque;
 
     if (bite >= PhysicsConstants::CLUTCH_LOCK_THRESHOLD) {
-        double lockingK = PhysicsConstants::CLUTCH_SLIP_K * 120.0;
+        double lockingK = PhysicsConstants::CLUTCH_SLIP_K * 3.0;
         double dampingK = lockingK * 0.5;
 
         double slipRate = (slip - this->clutchSlip) / PhysicsConstants::TIME_INTERVAL;
-        torqueClutch = slip * lockingK + slipRate * dampingK;
-        torqueClutch = std::clamp(torqueClutch, -PhysicsConstants::CLUTCH_MAX_TORQUE, PhysicsConstants::CLUTCH_MAX_TORQUE);
+        targetTorque = slip * lockingK + slipRate * dampingK;
+        targetTorque = std::clamp(targetTorque, -PhysicsConstants::CLUTCH_MAX_TORQUE, PhysicsConstants::CLUTCH_MAX_TORQUE);
     } else {
         double torqueMax = bite * PhysicsConstants::CLUTCH_MAX_TORQUE;
-        torqueClutch = std::clamp(slip * PhysicsConstants::CLUTCH_SLIP_K, -torqueMax, torqueMax);
+        targetTorque = std::clamp(slip * PhysicsConstants::CLUTCH_SLIP_K, -torqueMax, torqueMax);
+    }
+
+    double smoothing = 0.15;
+    double torqueClutch;
+
+    bool sameSign = (this->clutchTorque >= 0) == (targetTorque >= 0);
+    if (sameSign || std::abs(this->clutchTorque) < 1.0) {
+        torqueClutch = this->clutchTorque + smoothing * (targetTorque - this->clutchTorque);
+    } else {
+        torqueClutch = this->clutchTorque * (1.0 - smoothing);
     }
 
     this->engineTorque = engineTorque - torqueClutch;

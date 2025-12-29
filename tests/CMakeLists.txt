@@ -33,6 +33,11 @@ add_executable(
   ${CMAKE_SOURCE_DIR}/src/core/RigidBody.cpp
   ${CMAKE_SOURCE_DIR}/src/vehicle/Wheel.cpp
   ${CMAKE_SOURCE_DIR}/src/vehicle/Car.cpp
+  ${CMAKE_SOURCE_DIR}/src/vehicle/Engine.cpp
+  ${CMAKE_SOURCE_DIR}/src/vehicle/Gearbox.cpp
+  ${CMAKE_SOURCE_DIR}/src/control/TractionControl.cpp
+  ${CMAKE_SOURCE_DIR}/src/control/AntiLockBrakes.cpp
+  ${CMAKE_SOURCE_DIR}/src/rendering/Camera.cpp
   ${CMAKE_SOURCE_DIR}/src/config/constants.cpp
 )
 

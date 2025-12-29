@@ -52,55 +52,50 @@ TEST_F(WheelTest, SetLinearVelocityHandlesZero) {
 
 TEST_F(WheelTest, CalculateFrictionReturnsZeroForZeroSlip) {
     Eigen::Vector2d carVelocity(0.0, 0.0);
-    double carAngularPosition = 0.0;
     wheel->wheelAngle = 0.0;
     wheel->angular_velocity = 0.0;
 
-    Eigen::Vector2d friction = wheel->calculateFriction(carVelocity, carAngularPosition, PhysicsConstants::TIME_INTERVAL);
+    Eigen::Vector2d friction = wheel->calculateFriction(carVelocity, PhysicsConstants::TIME_INTERVAL);
 
     EXPECT_EQ(friction, Eigen::Vector2d::Zero());
 }
 
 TEST_F(WheelTest, CalculateFrictionWithForwardMotion) {
     Eigen::Vector2d carVelocity(0.0, 10.0);
-    double carAngularPosition = 0.0;
     wheel->wheelAngle = 0.0;
     wheel->angular_velocity = 0.0;
 
-    Eigen::Vector2d friction = wheel->calculateFriction(carVelocity, carAngularPosition, PhysicsConstants::TIME_INTERVAL);
+    Eigen::Vector2d friction = wheel->calculateFriction(carVelocity, PhysicsConstants::TIME_INTERVAL);
 
     EXPECT_LT(friction.y(), 0.0);
 }
 
 TEST_F(WheelTest, CalculateFrictionWithWheelSpinningFaster) {
     Eigen::Vector2d carVelocity(0.0, 5.0);
-    double carAngularPosition = 0.0;
     wheel->wheelAngle = 0.0;
     wheel->angular_velocity = 50.0;
 
-    Eigen::Vector2d friction = wheel->calculateFriction(carVelocity, carAngularPosition, PhysicsConstants::TIME_INTERVAL);
+    Eigen::Vector2d friction = wheel->calculateFriction(carVelocity, PhysicsConstants::TIME_INTERVAL);
 
     EXPECT_GT(friction.y(), 0.0);
 }
 
 TEST_F(WheelTest, CalculateFrictionWithAngledWheel) {
     Eigen::Vector2d carVelocity(0.0, 10.0);
-    double carAngularPosition = 0.0;
     wheel->wheelAngle = M_PI / 4.0;
     wheel->angular_velocity = 0.0;
 
-    Eigen::Vector2d friction = wheel->calculateFriction(carVelocity, carAngularPosition, PhysicsConstants::TIME_INTERVAL);
+    Eigen::Vector2d friction = wheel->calculateFriction(carVelocity, PhysicsConstants::TIME_INTERVAL);
 
     EXPECT_NE(friction, Eigen::Vector2d::Zero());
 }
 
 TEST_F(WheelTest, FrictionIsClampedByMaxFriction) {
     Eigen::Vector2d carVelocity(0.0, 1000.0);
-    double carAngularPosition = 0.0;
     wheel->wheelAngle = 0.0;
     wheel->angular_velocity = 0.0;
 
-    Eigen::Vector2d friction = wheel->calculateFriction(carVelocity, carAngularPosition, PhysicsConstants::TIME_INTERVAL);
+    Eigen::Vector2d friction = wheel->calculateFriction(carVelocity, PhysicsConstants::TIME_INTERVAL);
 
     double maxFriction = wheel->normalForce * wheel->frictionCoefficient;
     EXPECT_LE(friction.norm(), maxFriction * 1.01);
@@ -109,11 +104,10 @@ TEST_F(WheelTest, FrictionIsClampedByMaxFriction) {
 TEST_F(WheelTest, CalculateFrictionAppliesTorqueToWheel) {
     wheel->angular_torque = 0.0;
     Eigen::Vector2d carVelocity(0.0, 10.0);
-    double carAngularPosition = 0.0;
     wheel->wheelAngle = 0.0;
     wheel->angular_velocity = 0.0;
 
-    wheel->calculateFriction(carVelocity, carAngularPosition, PhysicsConstants::TIME_INTERVAL);
+    wheel->calculateFriction(carVelocity, PhysicsConstants::TIME_INTERVAL);
 
     EXPECT_NE(wheel->angular_torque, 0.0);
 }
@@ -157,28 +151,27 @@ TEST_F(WheelTest, IncrementTimeWithNegativeTorqueDecreasesVelocity) {
     EXPECT_LT(wheel->angular_velocity, 10.0);
 }
 
-TEST_F(WheelTest, CalculateFrictionWithDifferentCarOrientations) {
-    Eigen::Vector2d carVelocity(10.0, 0.0);
+TEST_F(WheelTest, CalculateFrictionWithDifferentVelocityDirections) {
     wheel->wheelAngle = 0.0;
     wheel->angular_velocity = 0.0;
 
-    Eigen::Vector2d friction1 = wheel->calculateFriction(carVelocity, 0.0, PhysicsConstants::TIME_INTERVAL);
+    Eigen::Vector2d friction1 = wheel->calculateFriction(Eigen::Vector2d(10.0, 0.0), PhysicsConstants::TIME_INTERVAL);
 
-    Eigen::Vector2d friction2 = wheel->calculateFriction(carVelocity, M_PI / 2.0, PhysicsConstants::TIME_INTERVAL);
+    wheel->angular_torque = 0.0;
+    Eigen::Vector2d friction2 = wheel->calculateFriction(Eigen::Vector2d(0.0, 10.0), PhysicsConstants::TIME_INTERVAL);
 
     EXPECT_NE(friction1, friction2);
 }
 
 TEST_F(WheelTest, MultipleFrictionCalculationsAccumulateTorque) {
     Eigen::Vector2d carVelocity(0.0, 10.0);
-    double carAngularPosition = 0.0;
     wheel->wheelAngle = 0.0;
     wheel->angular_velocity = 0.0;
 
-    wheel->calculateFriction(carVelocity, carAngularPosition, PhysicsConstants::TIME_INTERVAL);
+    wheel->calculateFriction(carVelocity, PhysicsConstants::TIME_INTERVAL);
     double torque1 = wheel->angular_torque;
 
-    wheel->calculateFriction(carVelocity, carAngularPosition, PhysicsConstants::TIME_INTERVAL);
+    wheel->calculateFriction(carVelocity, PhysicsConstants::TIME_INTERVAL);
     double torque2 = wheel->angular_torque;
 
     EXPECT_DOUBLE_EQ(torque2, 2.0 * torque1);

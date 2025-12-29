@@ -42,8 +42,8 @@ namespace PhysicsConstants {
     constexpr double FORCE_FEEDBACK_DECAY = 0.97;
 
     constexpr double CG_HEIGHT = 0.5;
-    constexpr double CLUTCH_MAX_TORQUE = 2500.0;
-    constexpr double CLUTCH_SLIP_K = 100.0;
+    constexpr double CLUTCH_MAX_TORQUE = 200.0;
+    constexpr double CLUTCH_SLIP_K = 1.0;
     constexpr double CLUTCH_LOCK_THRESHOLD = 0.70;
     constexpr double TRANS_INERTIA = 0.1;
 }
