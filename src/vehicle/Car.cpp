@@ -173,8 +173,15 @@ void Car::updateEngine(double throttle) {
     engine.updateRPM(throttle, effectiveEngineInertia);
 
     if (engine.getRPM() < 800.0 && getCurrentGear() != -1) {
+        bool wasClutchHeld = gearbox.isClutchHeld();
+        if (!wasClutchHeld) {
+            gearbox.holdClutch();
+        }
         while (getCurrentGear() > -1) {
             gearbox.shiftDown();
+        }
+        if (!wasClutchHeld) {
+            gearbox.releaseClutch();
         }
     }
 

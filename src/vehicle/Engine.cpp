@@ -74,7 +74,11 @@ double Engine::calculateTorque(double throttle)
     currentPower = getPowerGenerated(effectiveThrottle);
 
     double angularSpeed = (2.0 * M_PI * rpm) / 60.0;
-    engineTorque = currentPower / angularSpeed;
+    if (angularSpeed < 1e-3) {
+        engineTorque = 0.0;
+    } else {
+        engineTorque = currentPower / angularSpeed;
+    }
     return engineTorque;
 }
 

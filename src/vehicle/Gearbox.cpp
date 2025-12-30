@@ -155,6 +155,7 @@ static int debugCounter = 0;
         double dampingK = lockingK * 0.5;
 
         double slipRate = (slip - this->clutchSlip) / PhysicsConstants::TIME_INTERVAL;
+        slipRate = std::clamp(slipRate, -500.0, 500.0);
         targetTorque = slip * lockingK + slipRate * dampingK;
         targetTorque = std::clamp(targetTorque, -PhysicsConstants::CLUTCH_MAX_TORQUE, PhysicsConstants::CLUTCH_MAX_TORQUE);
     } else {
@@ -172,11 +173,16 @@ static int debugCounter = 0;
         torqueClutch = this->clutchTorque * (1.0 - smoothing);
     }
 
+    if (std::isnan(torqueClutch) || std::isinf(torqueClutch)) {
+        torqueClutch = 0.0;
+    }
+
     this->engineTorque = engineTorque - torqueClutch;
     this->clutchTorque = torqueClutch;
     this->clutchSlip = slip;
 
-    double wheelTorque = torqueClutch / engineToWheelRatio();
+    double ratio = engineToWheelRatio();
+    double wheelTorque = (std::abs(ratio) > 1e-6) ? (torqueClutch / ratio) : 0.0;
 
     if (debugCounter % 10 == 1) {
         std::cout << "EngineInputTorque: " << engineTorque << " Nm" << std::endl;
