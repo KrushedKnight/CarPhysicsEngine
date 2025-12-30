@@ -377,8 +377,8 @@ void Car::updateLoadTransfer() {
     double frontNominalLoad = (weight * frontWeightBias) / 2.0;
     double rearNominalLoad = (weight * rearWeightBias) / 2.0;
 
-    double dFz_longitudinal = -mass * ax_local * cg_height / wheelbase;
-    double dFz_lateral = -mass * ay_local * cg_height / track_width;
+    double dFz_longitudinal = -mass * ay_local * cg_height / wheelbase;
+    double dFz_lateral = -mass * ax_local * cg_height / track_width;
 
     frontLeft->normalForce = frontNominalLoad + dFz_longitudinal - dFz_lateral;
     frontRight->normalForce = frontNominalLoad + dFz_longitudinal + dFz_lateral;
