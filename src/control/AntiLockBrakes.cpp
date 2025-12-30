@@ -37,7 +37,7 @@ double AntiLockBrakes::regulateBrakePressure(Wheel& wheel, double requestedBrake
     }
 
     double reduction = std::abs(baseBrakeTorque) - std::abs(adjustedBrakeTorque);
-    if (reduction > 0) {
+    if (reduction > 0 && std::abs(baseBrakeTorque) > 1e-6) {
         interferencePercent = (reduction / std::abs(baseBrakeTorque)) * 100.0;
     } else {
         interferencePercent = 0.0;
