@@ -62,18 +62,16 @@ Eigen::Vector2d Wheel::calculateFriction(Eigen::Vector2d wheelVelocityLocal, dou
         } else {
             double slipAngle = std::atan2(std::abs(lateralVelocity), std::abs(velocityInWheelDir));
 
+            double normalizedAngle = slipAngle / PhysicsConstants::TIRE_PEAK_SLIP_ANGLE;
             double forceMagnitude = 0.0;
 
-            if (slipAngle <= PhysicsConstants::TIRE_PEAK_SLIP_ANGLE) {
-                forceMagnitude = (slipAngle / PhysicsConstants::TIRE_PEAK_SLIP_ANGLE) * maxFrictionForce;
-            } else if (slipAngle <= PhysicsConstants::TIRE_TRANSITION_SLIP_ANGLE) {
-                double peakForce = maxFrictionForce;
-                double slideForce = maxFrictionForce * PhysicsConstants::TIRE_SLIDE_RATIO;
-                double t = (slipAngle - PhysicsConstants::TIRE_PEAK_SLIP_ANGLE) /
-                          (PhysicsConstants::TIRE_TRANSITION_SLIP_ANGLE - PhysicsConstants::TIRE_PEAK_SLIP_ANGLE);
-                forceMagnitude = peakForce - t * (peakForce - slideForce);
+            if (normalizedAngle <= 1.0) {
+                forceMagnitude = maxFrictionForce * sin(normalizedAngle * M_PI / 2.0);
             } else {
-                forceMagnitude = maxFrictionForce * PhysicsConstants::TIRE_SLIDE_RATIO;
+                double excessAngle = slipAngle - PhysicsConstants::TIRE_PEAK_SLIP_ANGLE;
+                double decayRate = 8.0;
+                double slideRatio = PhysicsConstants::TIRE_SLIDE_RATIO;
+                forceMagnitude = maxFrictionForce * (slideRatio + (1.0 - slideRatio) * exp(-decayRate * excessAngle));
             }
 
             lateralFriction = -std::copysign(forceMagnitude, lateralVelocity);
