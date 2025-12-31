@@ -163,7 +163,7 @@ static int debugCounter = 0;
         targetTorque = std::clamp(slip * PhysicsConstants::CLUTCH_SLIP_K, -torqueMax, torqueMax);
     }
 
-    double smoothing = 0.15;
+    double smoothing = 0.06;
     double torqueClutch;
 
     bool sameSign = (this->clutchTorque >= 0) == (targetTorque >= 0);

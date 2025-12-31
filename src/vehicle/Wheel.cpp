@@ -39,7 +39,7 @@ Eigen::Vector2d Wheel::calculateFriction(Eigen::Vector2d wheelVelocityLocal, dou
 
     double longitudinalFriction = 0.0;
     if (std::abs(longitudinalSlip) > 1e-5) {
-        const double LONGITUDINAL_FRICTION_RESPONSE = 0.4;
+        const double LONGITUDINAL_FRICTION_RESPONSE = 0.6;
         double requiredForce = (longitudinalSlip / time_interval) * wheelMass * LONGITUDINAL_FRICTION_RESPONSE;
         longitudinalFriction = std::clamp(requiredForce, -maxFrictionForce, maxFrictionForce);
 
@@ -56,7 +56,7 @@ Eigen::Vector2d Wheel::calculateFriction(Eigen::Vector2d wheelVelocityLocal, dou
                                  lateralVelocity * lateralVelocity);
 
         if (speed < PhysicsConstants::TIRE_LOW_SPEED_THRESHOLD) {
-            const double LATERAL_FRICTION_RESPONSE = 0.55;
+            const double LATERAL_FRICTION_RESPONSE = 0.45;
             double requiredLateralForce = -(lateralVelocity / time_interval) * wheelMass * LATERAL_FRICTION_RESPONSE;
             lateralFriction = std::clamp(requiredLateralForce, -maxFrictionForce, maxFrictionForce);
         } else {
