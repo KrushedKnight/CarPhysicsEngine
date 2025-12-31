@@ -9,7 +9,7 @@ namespace PhysicsConstants {
     constexpr double DEG_TO_RAD = M_PI / 180.0;
     constexpr double RAD_TO_DEG = 180.0 / M_PI;
 
-    constexpr double PIXELS_PER_METER = 10.0;
+    constexpr double PIXELS_PER_METER = 25.0;
 
     constexpr double TIME_INTERVAL = 0.016;
     constexpr int SDL_TIME_INTERVAL = 16;

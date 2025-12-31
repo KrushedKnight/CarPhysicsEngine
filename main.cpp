@@ -58,7 +58,7 @@ int main(int argc, char* argv[]) {
     Car car{RenderingConstants::CENTER_X, RenderingConstants::CENTER_Y, RenderingConstants::CAR_WIDTH, RenderingConstants::CAR_LENGTH};
 
     Camera camera(car.pos_x, car.pos_y, 0.1);
-    Ground ground(40);
+    Ground ground(100);
 
     GUI gui;
     int fontSize = std::max(12, screenHeight / 60);
