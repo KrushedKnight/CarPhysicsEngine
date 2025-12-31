@@ -241,9 +241,9 @@ void Car::setSteering(double steering) {
 }
 
 void Car::updateInputs(double timeInterval) {
-    const double throttleRate = 3.0;
-    const double brakeRate = 5.0;
-    const double steeringRate = 4.0;
+    const double throttleRate = 6.0;
+    const double brakeRate = 9.0;
+    const double steeringRate = 7.0;
 
     double throttleDiff = targetThrottle - actualThrottle;
     double throttleChange = std::clamp(throttleDiff, -throttleRate * timeInterval, throttleRate * timeInterval);
@@ -386,7 +386,7 @@ void Car::updateLoadTransfer() {
     backRight->normalForce = rearNominalLoad - dFz_longitudinal + dFz_lateral;
 
     for (Wheel* wheel : wheels) {
-        wheel->normalForce = std::max(100.0, wheel->normalForce);
+        wheel->normalForce = std::max(60.0, wheel->normalForce);
     }
 }
 

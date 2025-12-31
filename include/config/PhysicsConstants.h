@@ -39,7 +39,7 @@ namespace PhysicsConstants {
 
     constexpr double STEERING_RACK = 1.5;
     constexpr double MAX_STEERING_ANGLE = 55.0 * DEG_TO_RAD;
-    constexpr double FORCE_FEEDBACK_DECAY = 0.97;
+    constexpr double FORCE_FEEDBACK_DECAY = 0.985;
 
     constexpr double CG_HEIGHT = 0.5;
     constexpr double CLUTCH_MAX_TORQUE = 750.0;

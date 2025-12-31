@@ -14,7 +14,8 @@ void Ground::draw(SDL_Renderer* renderer, const Camera* camera,
     int start_x = static_cast<int>(left / grid_spacing) * grid_spacing;
     int start_y = static_cast<int>(top / grid_spacing) * grid_spacing;
 
-    SDL_SetRenderDrawColor(renderer, line_r, line_g, line_b, 255);
+    SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
+    SDL_SetRenderDrawColor(renderer, line_r, line_g, line_b, 120);
 
     for (int x = start_x; x < right; x += grid_spacing) {
         int screen_x = camera->worldToScreenX(x, screenWidth);
