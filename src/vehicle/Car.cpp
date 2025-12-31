@@ -148,7 +148,7 @@ void Car::updateEngine(double throttle) {
 
 
     double totalWheelTorque = gearbox.convertEngineTorqueToWheel(engine.getEngineTorque(), &engine, avgWheelOmega);
-    double baseTorque = totalWheelTorque / 2.0;
+    double baseTorque = totalWheelTorque;
 
     double reflectedInertia = gearbox.getReflectedEngineInertia(EngineConstants::ENGINE_MOMENT_OF_INERTIA);
     double wheelInertia = PhysicsConstants::WHEEL_MOMENT_OF_INERTIA;
