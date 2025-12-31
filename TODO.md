@@ -1,12 +1,7 @@
 
-
-fix the car power
-fix the handling
 fix dials/aesthetics
+fix font library bs
 add TCS and ABS dials back
-
-maybe add turbocharger
-
 
 
 Export to WASM

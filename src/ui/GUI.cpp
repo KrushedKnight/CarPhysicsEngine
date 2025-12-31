@@ -47,6 +47,12 @@ bool GUI::initialize(const char* fontPath, int fontSize) {
     }
 
     if (font == nullptr) {
+#ifdef __EMSCRIPTEN__
+        const char* fallbackFonts[] = {
+            "/assets/DejaVuSansMono.ttf",
+            nullptr
+        };
+#else
         const char* fallbackFonts[] = {
             "/System/Library/Fonts/Menlo.ttc",
             "/System/Library/Fonts/Courier.dfont",
@@ -55,6 +61,7 @@ bool GUI::initialize(const char* fontPath, int fontSize) {
             "C:\\Windows\\Fonts\\consola.ttf",
             nullptr
         };
+#endif
 
         for (int i = 0; fallbackFonts[i] != nullptr && font == nullptr; i++) {
             font = TTF_OpenFont(fallbackFonts[i], fontSize);

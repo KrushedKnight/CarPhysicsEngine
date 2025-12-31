@@ -3,49 +3,48 @@ project(SimpleTrafficGame)
 
 set(CMAKE_CXX_STANDARD 17)
 
-find_package(PkgConfig REQUIRED)
-pkg_check_modules(SDL2 REQUIRED sdl2)
-pkg_check_modules(SDL2_TTF REQUIRED SDL2_ttf)
+set(SOURCES
+    main.cpp
+    src/core/RigidBody.cpp
+    src/vehicle/Wheel.cpp
+    src/vehicle/Car.cpp
+    src/vehicle/Engine.cpp
+    src/vehicle/Gearbox.cpp
+    src/control/TractionControl.cpp
+    src/control/AntiLockBrakes.cpp
+    src/ui/GUI.cpp
+    src/ui/Graph.cpp
+    src/ui/FreeBodyDiagram.cpp
+    src/ui/Dial.cpp
+    src/config/constants.cpp
+    src/rendering/Camera.cpp
+    src/rendering/Ground.cpp
+)
 
-include_directories(${SDL2_INCLUDE_DIRS})
-include_directories(${SDL2_TTF_INCLUDE_DIRS})
 include_directories(${CMAKE_SOURCE_DIR}/eigen-3.4.0)
 include_directories(${CMAKE_SOURCE_DIR}/include)
 
-link_directories(${SDL2_LIBRARY_DIRS})
-link_directories(${SDL2_TTF_LIBRARY_DIRS})
+if(EMSCRIPTEN)
+    set(CMAKE_EXECUTABLE_SUFFIX ".html")
 
-add_executable(SimpleTrafficGame main.cpp
-        src/core/RigidBody.cpp
-        src/vehicle/Wheel.cpp
-        src/vehicle/Car.cpp
-        src/control/TractionControl.cpp
-        src/control/AntiLockBrakes.cpp
-        src/ui/GUI.cpp
-        src/ui/Graph.cpp
-        src/ui/FreeBodyDiagram.cpp
-        src/ui/Dial.cpp
-        src/config/constants.cpp
-        src/rendering/Camera.cpp
-        src/rendering/Ground.cpp
-        include/core/RigidBody.h
-        include/vehicle/Wheel.h
-        include/vehicle/Car.h
-        include/control/TractionControl.h
-        include/control/AntiLockBrakes.h
-        include/ui/GUI.h
-        include/ui/Graph.h
-        include/ui/FreeBodyDiagram.h
-        include/ui/Dial.h
-        include/config/constants.h
-        include/rendering/Camera.h
-        include/rendering/Ground.h
-        include/vehicle/Engine.h
-        src/vehicle/Engine.cpp
-        include/vehicle/Gearbox.h
-        src/vehicle/Gearbox.cpp
-        include/config/EngineConstants.h)
-target_link_libraries(SimpleTrafficGame ${SDL2_LIBRARIES} ${SDL2_TTF_LIBRARIES})
+    add_executable(SimpleTrafficGame ${SOURCES})
 
-# Add tests subdirectory
-add_subdirectory(tests)
+    set_target_properties(SimpleTrafficGame PROPERTIES
+        LINK_FLAGS "-s USE_SDL=2 -s USE_SDL_TTF=2 -s WASM=1 -s ALLOW_MEMORY_GROWTH=1 --preload-file ${CMAKE_SOURCE_DIR}/assets@/assets --shell-file ${CMAKE_SOURCE_DIR}/shell.html -O2"
+    )
+else()
+    find_package(PkgConfig REQUIRED)
+    pkg_check_modules(SDL2 REQUIRED sdl2)
+    pkg_check_modules(SDL2_TTF REQUIRED SDL2_ttf)
+
+    include_directories(${SDL2_INCLUDE_DIRS})
+    include_directories(${SDL2_TTF_INCLUDE_DIRS})
+
+    link_directories(${SDL2_LIBRARY_DIRS})
+    link_directories(${SDL2_TTF_LIBRARY_DIRS})
+
+    add_executable(SimpleTrafficGame ${SOURCES})
+    target_link_libraries(SimpleTrafficGame ${SDL2_LIBRARIES} ${SDL2_TTF_LIBRARIES})
+
+    add_subdirectory(tests)
+endif()
