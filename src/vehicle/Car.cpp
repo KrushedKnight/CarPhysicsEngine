@@ -8,7 +8,7 @@
 
 Car::Car(double x, double y, int w, int h)
     : width(w), height(h),
-      gearbox({3.5, 2.5, 1.8, 1.3, 1.0, 0.8}, 3.7),
+      gearbox({4.2, 3.0, 2.2, 1.6, 1.2, 1.0}, 4.2),
       tcs(PhysicsConstants::TIRE_TCS_kP, PhysicsConstants::TIRE_TCS_kD),
       abs(PhysicsConstants::ABS_kP, PhysicsConstants::ABS_kD) {
     pos_x = x;
