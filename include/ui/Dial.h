@@ -4,6 +4,7 @@
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_ttf.h>
 #include <string>
+#include <map>
 
 class Dial {
 public:
@@ -25,6 +26,16 @@ private:
     double endAngle;
     double smoothingFactor;
 
+    SDL_Texture* backgroundTexture;
+    int cachedRadius;
+    SDL_Texture* labelTexture;
+    int labelWidth, labelHeight;
+    SDL_Texture* unitTexture;
+    int unitWidth, unitHeight;
+    std::map<std::string, SDL_Texture*> valueCache;
+    std::string lastValueText;
+
+    void renderBackground(SDL_Renderer* renderer, int radius, TTF_Font* font);
     void drawArc(SDL_Renderer* renderer, int centerX, int centerY, int radius,
                  double startAngle, double endAngle, int segments = 64);
     void drawTicks(SDL_Renderer* renderer, int centerX, int centerY, int radius);
@@ -37,6 +48,7 @@ private:
                   SDL_Color color, TTF_Font* font);
     double valueToAngle(double value);
     double lerp(double a, double b, double t);
+    void clearCache();
 };
 
 #endif

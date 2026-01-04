@@ -5,6 +5,7 @@
 #include <SDL2/SDL_ttf.h>
 #include <string>
 #include <vector>
+#include <map>
 #include "vehicle/Car.h"
 #include "ui/Graph.h"
 #include "ui/Dial.h"
@@ -39,6 +40,14 @@ private:
     bool showGraphs;
     bool showDials;
     int fontSize;
+
+    struct TextCacheEntry {
+        SDL_Texture* texture;
+        int width;
+        int height;
+    };
+    std::map<std::string, TextCacheEntry> textCache;
+    void clearTextCache();
 
     double currentThrottle;
     double currentBrake;

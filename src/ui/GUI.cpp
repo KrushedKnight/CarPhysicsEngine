@@ -26,12 +26,22 @@ GUI::GUI() : font(nullptr), dialFont(nullptr), visible(true), showGraphs(true), 
 }
 
 GUI::~GUI() {
+    clearTextCache();
     if (font != nullptr) {
         TTF_CloseFont(font);
     }
     if (dialFont != nullptr) {
         TTF_CloseFont(dialFont);
     }
+}
+
+void GUI::clearTextCache() {
+    for (auto& entry : textCache) {
+        if (entry.second.texture != nullptr) {
+            SDL_DestroyTexture(entry.second.texture);
+        }
+    }
+    textCache.clear();
 }
 
 bool GUI::initialize(const char* fontPath, int fontSize) {
@@ -110,6 +120,15 @@ bool GUI::initialize(const char* fontPath, int fontSize) {
 void GUI::drawText(SDL_Renderer* renderer, const std::string& text, int x, int y, SDL_Color color) {
     if (font == nullptr || text.empty()) return;
 
+    std::string cacheKey = text + "_" + std::to_string(color.r) + "_" + std::to_string(color.g) + "_" + std::to_string(color.b);
+
+    auto it = textCache.find(cacheKey);
+    if (it != textCache.end()) {
+        SDL_Rect dstrect = {x, y, it->second.width, it->second.height};
+        SDL_RenderCopy(renderer, it->second.texture, nullptr, &dstrect);
+        return;
+    }
+
     SDL_Surface* surface = TTF_RenderText_Blended(font, text.c_str(), color);
     if (surface == nullptr) {
         return;
@@ -121,10 +140,12 @@ void GUI::drawText(SDL_Renderer* renderer, const std::string& text, int x, int y
         return;
     }
 
+    TextCacheEntry entry = {texture, surface->w, surface->h};
+    textCache[cacheKey] = entry;
+
     SDL_Rect dstrect = {x, y, surface->w, surface->h};
     SDL_RenderCopy(renderer, texture, nullptr, &dstrect);
 
-    SDL_DestroyTexture(texture);
     SDL_FreeSurface(surface);
 }
 

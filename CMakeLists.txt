@@ -26,12 +26,12 @@ include_directories(${CMAKE_SOURCE_DIR}/include)
 
 if(EMSCRIPTEN)
     set(CMAKE_EXECUTABLE_SUFFIX ".html")
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -s USE_SDL=2 -s USE_SDL_TTF=2")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -s USE_SDL=2 -s USE_SDL_TTF=2 -O3")
 
     add_executable(SimpleTrafficGame ${SOURCES})
 
     set_target_properties(SimpleTrafficGame PROPERTIES
-        LINK_FLAGS "-s USE_SDL=2 -s USE_SDL_TTF=2 -s WASM=1 -s ALLOW_MEMORY_GROWTH=1 --preload-file ${CMAKE_SOURCE_DIR}/assets@/assets --shell-file ${CMAKE_SOURCE_DIR}/shell.html -O2"
+        LINK_FLAGS "-s USE_SDL=2 -s USE_SDL_TTF=2 -s WASM=1 -s USE_WEBGL2=1 -s ALLOW_MEMORY_GROWTH=1 -s DISABLE_EXCEPTION_CATCHING=1 --preload-file ${CMAKE_SOURCE_DIR}/assets@/assets --shell-file ${CMAKE_SOURCE_DIR}/shell.html -O3"
     )
 else()
     find_package(PkgConfig REQUIRED)

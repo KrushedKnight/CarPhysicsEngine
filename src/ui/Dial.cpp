@@ -7,10 +7,34 @@
 Dial::Dial(double minValue, double maxValue, const std::string& label, const std::string& unit)
     : minValue(minValue), maxValue(maxValue), currentValue(minValue), displayValue(minValue),
       label(label), unit(unit), startAngle(-225.0 * M_PI / 180.0), endAngle(45.0 * M_PI / 180.0),
-      smoothingFactor(0.15) {
+      smoothingFactor(0.15), backgroundTexture(nullptr), cachedRadius(0),
+      labelTexture(nullptr), labelWidth(0), labelHeight(0),
+      unitTexture(nullptr), unitWidth(0), unitHeight(0) {
 }
 
 Dial::~Dial() {
+    clearCache();
+}
+
+void Dial::clearCache() {
+    if (backgroundTexture != nullptr) {
+        SDL_DestroyTexture(backgroundTexture);
+        backgroundTexture = nullptr;
+    }
+    if (labelTexture != nullptr) {
+        SDL_DestroyTexture(labelTexture);
+        labelTexture = nullptr;
+    }
+    if (unitTexture != nullptr) {
+        SDL_DestroyTexture(unitTexture);
+        unitTexture = nullptr;
+    }
+    for (auto& entry : valueCache) {
+        if (entry.second != nullptr) {
+            SDL_DestroyTexture(entry.second);
+        }
+    }
+    valueCache.clear();
 }
 
 void Dial::setValue(double value) {
@@ -126,43 +150,36 @@ void Dial::drawNeedle(SDL_Renderer* renderer, int centerX, int centerY, int radi
 
     SDL_SetRenderDrawColor(renderer, 255, 100, 80, 255);
     SDL_RenderDrawLine(renderer, tailX, tailY, tipX, tipY);
+    SDL_RenderDrawLine(renderer, tailX + 1, tailY, tipX + 1, tipY);
 
-    SDL_SetRenderDrawColor(renderer, 255, 140, 120, 150);
-    int glowOffsets[] = {-1, 0, 1};
-    for (int dx : glowOffsets) {
-        for (int dy : glowOffsets) {
-            if (dx == 0 && dy == 0) continue;
-            SDL_RenderDrawLine(renderer, tailX + dx, tailY + dy, tipX + dx, tipY + dy);
-        }
-    }
-
+    SDL_Rect centerRect = {centerX - 4, centerY - 4, 8, 8};
     SDL_SetRenderDrawColor(renderer, 255, 100, 80, 255);
-    for (int r = 0; r < 6; r++) {
-        for (int i = 0; i < 360; i += 30) {
-            double rad = i * M_PI / 180.0;
-            int x = centerX + static_cast<int>(r * cos(rad));
-            int y = centerY + static_cast<int>(r * sin(rad));
-            SDL_RenderDrawPoint(renderer, x, y);
-        }
-    }
+    SDL_RenderFillRect(renderer, &centerRect);
 
+    SDL_Rect innerRect = {centerX - 2, centerY - 2, 4, 4};
     SDL_SetRenderDrawColor(renderer, 40, 40, 40, 255);
-    for (int r = 1; r < 4; r++) {
-        for (int i = 0; i < 360; i += 20) {
-            double rad = i * M_PI / 180.0;
-            int x = centerX + static_cast<int>(r * cos(rad));
-            int y = centerY + static_cast<int>(r * sin(rad));
-            SDL_RenderDrawPoint(renderer, x, y);
-        }
-    }
+    SDL_RenderFillRect(renderer, &innerRect);
 }
 
 void Dial::drawLabel(SDL_Renderer* renderer, int centerX, int centerY, int radius, TTF_Font* font) {
-    if (font == nullptr) return;
+    if (font == nullptr || label.empty()) return;
 
-    int labelY = centerY + radius / 3;
-    SDL_Color labelColor = {160, 160, 160, 255};
-    drawText(renderer, label, centerX - static_cast<int>(label.length() * 3), labelY, labelColor, font);
+    if (labelTexture == nullptr) {
+        SDL_Color labelColor = {160, 160, 160, 255};
+        SDL_Surface* surface = TTF_RenderText_Blended(font, label.c_str(), labelColor);
+        if (surface != nullptr) {
+            labelTexture = SDL_CreateTextureFromSurface(renderer, surface);
+            labelWidth = surface->w;
+            labelHeight = surface->h;
+            SDL_FreeSurface(surface);
+        }
+    }
+
+    if (labelTexture != nullptr) {
+        int labelY = centerY + radius / 3;
+        SDL_Rect dstRect = {centerX - labelWidth / 2, labelY, labelWidth, labelHeight};
+        SDL_RenderCopy(renderer, labelTexture, nullptr, &dstRect);
+    }
 }
 
 void Dial::drawReadout(SDL_Renderer* renderer, int centerX, int centerY, int radius, TTF_Font* font) {
@@ -173,34 +190,45 @@ void Dial::drawReadout(SDL_Renderer* renderer, int centerX, int centerY, int rad
     std::string valueText = oss.str();
 
     int readoutY = centerY + radius / 2;
-    SDL_Color readoutColor = {240, 240, 240, 255};
 
-    SDL_Surface* valueSurface = TTF_RenderText_Blended(font, valueText.c_str(), readoutColor);
-    if (valueSurface != nullptr) {
-        int valueX = centerX - valueSurface->w / 2;
-        SDL_Texture* valueTexture = SDL_CreateTextureFromSurface(renderer, valueSurface);
-        if (valueTexture != nullptr) {
-            SDL_Rect valueRect = {valueX, readoutY, valueSurface->w, valueSurface->h};
-            SDL_RenderCopy(renderer, valueTexture, nullptr, &valueRect);
-            SDL_DestroyTexture(valueTexture);
+    if (valueText != lastValueText) {
+        auto it = valueCache.find(valueText);
+        if (it == valueCache.end()) {
+            SDL_Color readoutColor = {240, 240, 240, 255};
+            SDL_Surface* valueSurface = TTF_RenderText_Blended(font, valueText.c_str(), readoutColor);
+            if (valueSurface != nullptr) {
+                SDL_Texture* tex = SDL_CreateTextureFromSurface(renderer, valueSurface);
+                valueCache[valueText] = tex;
+                SDL_FreeSurface(valueSurface);
+            }
         }
-        SDL_FreeSurface(valueSurface);
+        lastValueText = valueText;
+    }
+
+    auto it = valueCache.find(valueText);
+    if (it != valueCache.end() && it->second != nullptr) {
+        int w, h;
+        SDL_QueryTexture(it->second, nullptr, nullptr, &w, &h);
+        SDL_Rect valueRect = {centerX - w / 2, readoutY, w, h};
+        SDL_RenderCopy(renderer, it->second, nullptr, &valueRect);
     }
 
     if (!unit.empty()) {
-        int unitY = readoutY + 15;
-        SDL_Color unitColor = {140, 140, 140, 255};
-
-        SDL_Surface* unitSurface = TTF_RenderText_Blended(font, unit.c_str(), unitColor);
-        if (unitSurface != nullptr) {
-            int unitX = centerX - unitSurface->w / 2;
-            SDL_Texture* unitTexture = SDL_CreateTextureFromSurface(renderer, unitSurface);
-            if (unitTexture != nullptr) {
-                SDL_Rect unitRect = {unitX, unitY, unitSurface->w, unitSurface->h};
-                SDL_RenderCopy(renderer, unitTexture, nullptr, &unitRect);
-                SDL_DestroyTexture(unitTexture);
+        if (unitTexture == nullptr) {
+            SDL_Color unitColor = {140, 140, 140, 255};
+            SDL_Surface* unitSurface = TTF_RenderText_Blended(font, unit.c_str(), unitColor);
+            if (unitSurface != nullptr) {
+                unitTexture = SDL_CreateTextureFromSurface(renderer, unitSurface);
+                unitWidth = unitSurface->w;
+                unitHeight = unitSurface->h;
+                SDL_FreeSurface(unitSurface);
             }
-            SDL_FreeSurface(unitSurface);
+        }
+
+        if (unitTexture != nullptr) {
+            int unitY = readoutY + 15;
+            SDL_Rect unitRect = {centerX - unitWidth / 2, unitY, unitWidth, unitHeight};
+            SDL_RenderCopy(renderer, unitTexture, nullptr, &unitRect);
         }
     }
 }
@@ -225,11 +253,40 @@ void Dial::drawText(SDL_Renderer* renderer, const std::string& text, int x, int 
     SDL_FreeSurface(surface);
 }
 
+void Dial::renderBackground(SDL_Renderer* renderer, int radius, TTF_Font* font) {
+    int size = radius * 2 + 10;
+    backgroundTexture = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_RGBA8888,
+                                          SDL_TEXTUREACCESS_TARGET, size, size);
+    SDL_SetTextureBlendMode(backgroundTexture, SDL_BLENDMODE_BLEND);
+
+    SDL_SetRenderTarget(renderer, backgroundTexture);
+    SDL_SetRenderDrawColor(renderer, 0, 0, 0, 0);
+    SDL_RenderClear(renderer);
+
+    int center = size / 2;
+    drawTicks(renderer, center, center, radius);
+    drawNumbers(renderer, center, center, radius, font);
+
+    SDL_SetRenderTarget(renderer, nullptr);
+    cachedRadius = radius;
+}
+
 void Dial::draw(SDL_Renderer* renderer, int centerX, int centerY, int radius, TTF_Font* font) {
     SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
 
-    drawTicks(renderer, centerX, centerY, radius);
-    drawNumbers(renderer, centerX, centerY, radius, font);
+    if (backgroundTexture == nullptr || cachedRadius != radius) {
+        if (backgroundTexture != nullptr) {
+            SDL_DestroyTexture(backgroundTexture);
+        }
+        renderBackground(renderer, radius, font);
+    }
+
+    if (backgroundTexture != nullptr) {
+        int size = radius * 2 + 10;
+        SDL_Rect destRect = {centerX - size/2, centerY - size/2, size, size};
+        SDL_RenderCopy(renderer, backgroundTexture, nullptr, &destRect);
+    }
+
     drawNeedle(renderer, centerX, centerY, radius);
     drawLabel(renderer, centerX, centerY, radius, font);
     drawReadout(renderer, centerX, centerY, radius, font);
