@@ -26,6 +26,7 @@ include_directories(${CMAKE_SOURCE_DIR}/include)
 
 if(EMSCRIPTEN)
     set(CMAKE_EXECUTABLE_SUFFIX ".html")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -s USE_SDL=2 -s USE_SDL_TTF=2")
 
     add_executable(SimpleTrafficGame ${SOURCES})
 
