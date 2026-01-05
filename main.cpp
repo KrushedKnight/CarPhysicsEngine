@@ -121,8 +121,8 @@ int main(int argc, char* argv[]) {
     int screenHeight;
 
 #ifdef __EMSCRIPTEN__
-    screenWidth = 1280;
-    screenHeight = 720;
+    screenWidth = 1920;
+    screenHeight = 1080;
 #else
     SDL_DisplayMode displayMode;
     if (SDL_GetCurrentDisplayMode(0, &displayMode) != 0) {
@@ -153,6 +153,7 @@ int main(int argc, char* argv[]) {
         return 1;
     }
 
+    SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "1");
     SDL_Renderer* renderer = SDL_CreateRenderer(win, -1, SDL_RENDERER_ACCELERATED);
 
     if (!renderer) {
