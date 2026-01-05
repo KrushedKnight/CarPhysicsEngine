@@ -178,7 +178,7 @@ int main(int argc, char* argv[]) {
     g_gameState = new GameState{win, renderer, car, camera, ground, gui, true};
 
 #ifdef __EMSCRIPTEN__
-    emscripten_set_main_loop(mainLoop, 0, 1);
+    emscripten_set_main_loop(mainLoop, 60, 1);
 #else
     while (g_gameState->running) {
         mainLoop();
