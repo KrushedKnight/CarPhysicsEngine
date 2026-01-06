@@ -278,7 +278,7 @@ void GUI::drawHUD(SDL_Renderer* renderer, const Car& car, double throttle) {
     calculateSystemInterference(car, maxTcs, maxAbs);
 
     int indicatorY = speedPanel.y + speedPanel.h + padding;
-    int indicatorBarWidth = speedPanelWidth - 60;
+    int indicatorBarWidth = speedPanelWidth - 50;
     drawAssistIndicators(renderer, speedPanelX, indicatorY, maxTcs, maxAbs, indicatorBarWidth);
 
     drawGraphs(renderer);
@@ -544,16 +544,19 @@ void GUI::drawAssistIndicators(SDL_Renderer* renderer, int x, int y,
     int padding = std::max(8, windowHeight / 135);
     int labelWidth = 50;
 
+    int barYOffset = (fontSize / 2) - (barHeight / 2);
+
     auto drawBar = [&](const char* label, double value, double scale, int yPos) {
         drawText(renderer, label, x, yPos, {200, 200, 200, 255});
 
-        SDL_Rect barBg = {x + labelWidth, yPos, barWidth, barHeight};
+        int barY = yPos + barYOffset;
+        SDL_Rect barBg = {x + labelWidth, barY, barWidth, barHeight};
         SDL_SetRenderDrawColor(renderer, 40, 40, 40, 255);
         SDL_RenderFillRect(renderer, &barBg);
 
         if (value > 0) {
             int fillWidth = (int)(barWidth * std::min(value / scale, 1.0));
-            SDL_Rect barFill = {x + labelWidth, yPos, fillWidth, barHeight};
+            SDL_Rect barFill = {x + labelWidth, barY, fillWidth, barHeight};
 
             SDL_Color color;
             if (strcmp(label, "TCS:") == 0) {
