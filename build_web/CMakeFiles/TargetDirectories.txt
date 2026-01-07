@@ -1,3 +1,0 @@
-/Users/krushedknight/Programming/BasicCarGame/build_web/CMakeFiles/SimpleTrafficGame.dir
-/Users/krushedknight/Programming/BasicCarGame/build_web/CMakeFiles/edit_cache.dir
-/Users/krushedknight/Programming/BasicCarGame/build_web/CMakeFiles/rebuild_cache.dir
