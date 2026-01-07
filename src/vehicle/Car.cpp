@@ -248,7 +248,7 @@ void Car::setSteering(double steering) {
 void Car::updateInputs(double timeInterval) {
     const double throttleRate = 6.0;
     const double brakeRate = 9.0;
-    const double steeringRate = 7.0;
+    const double steeringRate = 3.5;
 
     double throttleDiff = targetThrottle - actualThrottle;
     double throttleChange = std::clamp(throttleDiff, -throttleRate * timeInterval, throttleRate * timeInterval);

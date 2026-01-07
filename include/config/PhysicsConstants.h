@@ -19,9 +19,9 @@ namespace PhysicsConstants {
     constexpr double WHEEL_MASS = 20.0;
     constexpr double WHEEL_MOMENT_OF_INERTIA = 0.5 * WHEEL_MASS * WHEEL_RADIUS * WHEEL_RADIUS;
 
-    constexpr double TIRE_PEAK_SLIP_ANGLE = 8.0 * DEG_TO_RAD;
+    constexpr double TIRE_PEAK_SLIP_ANGLE = 10.0 * DEG_TO_RAD;
     constexpr double TIRE_TRANSITION_SLIP_ANGLE = 15.0 * DEG_TO_RAD;
-    constexpr double TIRE_SLIDE_RATIO = 0.75;
+    constexpr double TIRE_SLIDE_RATIO = 0.85;
     constexpr double TIRE_LOW_SPEED_THRESHOLD = 0.5;
     constexpr double TIRE_SLIP_SETPOINT = 0.1;
     constexpr double TIRE_TCS_kP = 2.0;

@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>BasicCarGame</title>
+    <style>
+        body { margin: 0; background: #1a1a1a; display: flex; justify-content: center; align-items: center; min-height: 100vh; }
+        #canvas-container { position: relative; }
+        canvas { display: block; image-rendering: pixelated; image-rendering: crisp-edges; }
+        #status { position: absolute; top: 10px; left: 50%; transform: translateX(-50%); color: white; font-family: monospace; z-index: 10; }
+        #controls { position: absolute; bottom: 10px; left: 50%; transform: translateX(-50%); color: #888; font-family: monospace; font-size: 12px; z-index: 10; background: rgba(0,0,0,0.5); padding: 5px 10px; border-radius: 3px; }
+    </style>
+</head>
+<body>
+    <div id="status">Loading...</div>
+    <div id="canvas-container">
+        <canvas id="canvas"></canvas>
+        <div id="controls">W/S: Throttle/Brake | A/D: Steer | E/C: Gear Up/Down | SHIFT: Clutch | V: Vectors | H: HUD | G: Graphs</div>
+    </div>
+    <script>
+        var canvas = document.getElementById('canvas');
+        var dpr = window.devicePixelRatio || 1;
+
+        // Calculate maximum canvas size that fits viewport
+        var maxWidth = window.innerWidth;
+        var maxHeight = window.innerHeight;
+
+        // Maintain 16:9 aspect ratio
+        var aspectRatio = 16 / 9;
+        var width, height;
+
+        if (maxWidth / maxHeight > aspectRatio) {
+            // Height-constrained
+            height = maxHeight;
+            width = height * aspectRatio;
+        } else {
+            // Width-constrained
+            width = maxWidth;
+            height = width / aspectRatio;
+        }
+
+        // Set canvas buffer size (multiplied by DPR for sharpness)
+        canvas.width = Math.floor(width * dpr);
+        canvas.height = Math.floor(height * dpr);
+
+        // Set CSS display size to match logical pixels
+        canvas.style.width = Math.floor(width) + 'px';
+        canvas.style.height = Math.floor(height) + 'px';
+
+        var Module = {
+            canvas: canvas,
+            onRuntimeInitialized: function() {
+                document.getElementById('status').style.display = 'none';
+            }
+        };
+    </script>
+    {{{ SCRIPT }}}
+</body>
+</html>
